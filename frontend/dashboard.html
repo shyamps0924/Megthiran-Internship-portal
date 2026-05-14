@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | MegThiran Internship Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page-dashboard" data-page="dashboard">
+  <div class="cosmos-shell" aria-hidden="true">
+    <div class="star-layer star-layer-dense"></div>
+    <div class="star-layer star-layer-soft"></div>
+    <div class="aurora aurora-primary"></div>
+    <div class="aurora aurora-secondary"></div>
+    <div class="orbit-cluster orbit-cluster-dashboard">
+      <span class="orbit-circle orbit-circle-sm"></span>
+      <span class="orbit-circle orbit-circle-md"></span>
+      <span class="orbit-circle orbit-circle-lg"></span>
+      <span class="orbit-circle orbit-circle-xl"></span>
+    </div>
+  </div>
+
+  <header class="dashboard-navbar">
+    <div class="nav-shell">
+      <a href="dashboard.html" class="brand-lockup" aria-label="MegThiran dashboard">
+        <img src="../assets/logo.png" onerror="this.src='../assets/megthiran.png'" alt="Megthiran logo" class="brand-logo brand-logo-nav" />
+      </a>
+      <button type="button" id="logoutButton" class="primary-btn nav-logout">Logout</button>
+    </div>
+  </header>
+
+  <main class="dashboard-shell">
+    <section class="dashboard-hero glass-card">
+      <div class="card-glow"></div>
+      <div class="hero-copy-wrap">
+        <div class="dashboard-header">
+          <h1>Megthiran Internship Dashboard</h1>
+          <p>View your internship details and progress.</p>
+        </div>
+      </div>
+
+      <div class="hero-stat-grid">
+        <article class="mini-stat">
+          <span class="stat-label card-label">Intern ID</span>
+          <strong id="internIdDisplay" class="card-value">M-26IP001</strong>
+        </article>
+        <article class="mini-stat">
+          <span class="stat-label card-label">Plan</span>
+          <strong id="planDisplay" class="card-value">Premium</strong>
+        </article>
+        <article class="mini-stat">
+          <span class="stat-label card-label">Start Date</span>
+          <strong id="startDateDisplay" class="card-value">10 Apr 2026</strong>
+        </article>
+        <article class="mini-stat">
+          <span class="stat-label card-label">Duration</span>
+          <strong id="durationDisplay" class="card-value">30 Days</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="glass-card panel progress-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Credits System</p>
+            <h2>My Credits</h2>
+          </div>
+        </div>
+        <div class="credits-section">
+          <p>Earn credits by attending sessions and completing tasks.</p>
+          <div class="credits-bar">
+            <div class="credits-fill" id="creditsFill" style="width: 0%;"></div>
+          </div>
+          <div class="credits-info">
+            <span id="creditsEarnedLabel">0% earned</span>
+            <span>100% target</span>
+          </div>
+          <p class="credits-note">
+            Credits increase when:<br />
+            &bull; You attend webinars (via code submission)<br />
+            &bull; You submit tasks/projects (LinkedIn proof)
+          </p>
+        </div>
+      </article>
+
+      <article class="glass-card panel submission-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Submission actions</h2>
+          </div>
+        </div>
+        <div class="action-grid">
+          <a class="action-card" href="https://forms.gle/exampleProjectSubmit" target="_blank" rel="noreferrer">
+            <span>Submit Project</span>
+            <small>Upload your completed project (LinkedIn link)</small>
+          </a>
+          <a class="action-card" href="https://forms.gle/exampleAttendanceSubmit" target="_blank" rel="noreferrer">
+            <span>Attendance Submission</span>
+            <small>Enter webinar code to mark attendance</small>
+          </a>
+        </div>
+      </article>
+
+      <article class="glass-card panel announcements-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Announcements</p>
+            <h2>Notice board</h2>
+          </div>
+        </div>
+        <div class="announcement-list">
+          <div class="notice-card">
+            <strong>Project 1 deadline extended</strong>
+            <p>Submission window now closes on 18 Apr 2026 by 11:59 PM.</p>
+          </div>
+          <div class="notice-card">
+            <strong>Webinar on Sunday</strong>
+            <p>Join the product strategy session this Sunday at 6:00 PM.</p>
+          </div>
+          <div class="notice-card">
+            <strong>Attendance reminder</strong>
+            <p>Submit attendance before 8:00 PM daily to keep your streak active.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="glass-card panel resources-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Learning Materials</h2>
+          </div>
+        </div>
+        <p class="resources-copy">Access domain-specific handbooks and reference materials.</p>
+        <div class="resource-grid">
+          <a class="resource-card" href="https://www.perplexity.ai/" target="_blank" rel="noreferrer">AI Tools</a>
+          <a class="resource-card" href="https://developer.mozilla.org/en-US/docs/Learn" target="_blank" rel="noreferrer">Web Dev Resources</a>
+          <a class="resource-card" href="https://www.canva.com/templates/" target="_blank" rel="noreferrer">Templates</a>
+        </div>
+      </article>
+
+      <article class="glass-card panel sessions-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Industry Expert Sessions</p>
+            <h2>Upcoming webinars</h2>
+          </div>
+        </div>
+        <div class="session-list">
+          <div class="session-item">
+            <div>
+              <strong>UI Systems for Product Teams</strong>
+              <p>16 Apr 2026 - 6:30 PM</p>
+            </div>
+            <a class="secondary-btn panel-btn" href="https://meet.google.com/" target="_blank" rel="noreferrer">Join</a>
+          </div>
+          <div class="session-item">
+            <div>
+              <strong>AI Workflow for Modern Interns</strong>
+              <p>20 Apr 2026 - 7:00 PM</p>
+            </div>
+            <a class="secondary-btn panel-btn" href="https://meet.google.com/" target="_blank" rel="noreferrer">Join</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="glass-card panel support-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Support / Contact Mentor</p>
+            <h2>Need help?</h2>
+          </div>
+        </div>
+        <p class="support-copy">Reach your assigned mentor instantly for blockers, guidance, or review support.</p>
+        <a class="primary-btn panel-btn" href="https://wa.me/919999999999" target="_blank" rel="noreferrer">Contact Mentor</a>
+      </article>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

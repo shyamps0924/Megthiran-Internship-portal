@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | MegThiran Internship Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page-login" data-page="login">
+  <div class="cosmos-shell" aria-hidden="true">
+    <div class="star-layer star-layer-dense"></div>
+    <div class="star-layer star-layer-soft"></div>
+    <div class="aurora aurora-primary"></div>
+    <div class="aurora aurora-secondary"></div>
+    <div class="orbit-cluster orbit-cluster-login">
+      <span class="orbit-circle orbit-circle-sm"></span>
+      <span class="orbit-circle orbit-circle-md"></span>
+      <span class="orbit-circle orbit-circle-lg"></span>
+    </div>
+  </div>
+
+  <main class="login-page-shell">
+    <section class="login-hero login-left">
+      <h1 class="page-title">Access Your Internship Dashboard</h1>
+      <p class="page-copy">
+        Login to manage your internship tasks, track progress, and access your learning resources.
+      </p>
+    </section>
+
+    <section class="glass-card login-card">
+      <div class="card-glow"></div>
+      <div class="login-brand-row">
+        <img src="../assets/logo.png" onerror="this.src='../assets/megthiran.png'" alt="Megthiran logo" class="brand-logo" />
+      </div>
+
+      <form id="loginForm" class="login-form" novalidate>
+        <div class="field-group">
+          <label for="internId">Intern ID</label>
+          <input
+            id="internId"
+            name="internId"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="Intern ID"
+            aria-describedby="internIdError"
+            required
+          />
+          <p id="internIdError" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <div class="field-group">
+          <label for="dob">Password</label>
+          <input
+            id="dob"
+            name="dob"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Date of Birth (DD-MM-YYYY)"
+            aria-describedby="dobHint dobError"
+            required
+          />
+          <p id="dobHint" class="field-hint">Password is your date of birth in DD-MM-YYYY format.</p>
+          <p id="dobError" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <button type="submit" class="primary-btn login-submit">Login</button>
+      </form>
+
+      <a href="index.html" class="text-link">Back to main site</a>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
