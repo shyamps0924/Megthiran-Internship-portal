@@ -47,3 +47,5 @@ Open:
 - The legal pages are frontend-only and render from the bundled content in `frontend/legal-content.js`.
 - The `.docx` files remain in the project root as the original source documents.
 - No backend server, API, or runtime document parsing is required for the website to work.
+# Megthiran-Internship-portal
+Official website for the Megthiran internship platform.
