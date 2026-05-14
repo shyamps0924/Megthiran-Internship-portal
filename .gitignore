@@ -1,6 +1,7 @@
 venv/
 dist/
 .env
+credentials.json
 # Logs
 logs
 *.log
