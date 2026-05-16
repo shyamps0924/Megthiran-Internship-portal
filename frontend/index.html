@@ -14,8 +14,7 @@
     .hero-content .hero-program-title,
     .hero-content h1,
     .hero-content > .section-text,
-    .hero-content .hero-actions,
-    .hero-megthiran-mark {
+    .hero-content .hero-actions {
       opacity: 0;
       transform: translateY(40px);
       animation: heroEntrance 0.72s ease-out forwards;
@@ -38,15 +37,12 @@
       animation-delay: 0.3s;
     }
 
-    .hero-megthiran-mark {
-      position: absolute;
-      inset: 0;
-      width: min(58%, 240px);
-      height: auto;
-      margin: auto;
-      object-fit: contain;
+    .hero-laptop-scene {
+      opacity: 0;
+      transform: translateY(40px);
+      animation: heroEntrance 0.72s ease-out forwards;
       animation-delay: 0.22s;
-      z-index: 2;
+      will-change: transform, opacity;
     }
 
     .hero-visual {
@@ -187,12 +183,6 @@
     }
 
     @media (max-width: 780px) {
-      .hero-megthiran-mark {
-        position: relative;
-        width: min(56%, 210px);
-        inset: auto;
-      }
-
       .pricing-grid {
         grid-template-columns: 1fr;
       }
@@ -200,10 +190,6 @@
     }
 
     @media (max-width: 520px) {
-      .hero-megthiran-mark {
-        width: min(62%, 180px);
-      }
-
       .pricing-card {
         padding: 24px;
       }
@@ -253,36 +239,66 @@
             <a class="btn btn-secondary" href="./domains.html">Explore Domains</a>
           </div>
         </div>
-        <figure class="hero-visual" aria-label="MEGTHIRAN internship program">
-          <img src="./assets/megthiran.png" alt="Megthiran logo" class="hero-megthiran-mark" />
+        <figure class="hero-visual" aria-label="MegThiran 1.0 laptop preview">
+          <div class="hero-laptop-scene" aria-hidden="true">
+            <img src="./assets/laptop.png" alt="" class="hero-laptop-image" />
+          </div>
         </figure>
       </div>
     </section>
 
-    <section class="section promotional-banner" id="promo-banner" aria-labelledby="promoTitle">
+    <section class="section what-you-get-section" id="what-you-get" aria-labelledby="whatYouGetTitle">
       <div class="container">
-        <div class="promo-hero-shell">
-          <span class="promo-glow promo-glow-one" aria-hidden="true"></span>
-          <span class="promo-glow promo-glow-two" aria-hidden="true"></span>
-          <span class="promo-grid-light" aria-hidden="true"></span>
-          <div class="promo-content">
-            <p class="promo-eyebrow">START YOUR INTERNSHIP JOURNEY</p>
-            <h2 class="promo-heading gradient-text" id="promoTitle">
-              <span>75+ Industry Domains</span>
-              <span>Remote Internships</span>
-              <span>Build Real-World Skills</span>
-              <span>Affordable Internship Programs</span>
-              <span>Industry-Ready Experience</span>
-            </h2>
-            <p class="promo-description">Explore internship domains, gain practical experience, work on real-world projects, and build industry-ready skills through affordable structured programs.</p>
-            <div class="promo-highlights" aria-label="Megthiran internship highlights">
-              <span>Real-World Projects</span>
-              <span>Remote Friendly</span>
-              <span>Structured Mentorship</span>
+        <div class="what-you-get-shell">
+          <div class="section-kicker">
+            <span></span>
+            <h2 id="whatYouGetTitle">WHAT YOU GET</h2>
+            <span></span>
+          </div>
+
+          <div class="benefit-grid" aria-label="MegThiran internship benefits">
+            <article class="benefit-card">
+              <div class="benefit-icon"><i class="bi bi-briefcase-fill"></i></div>
+              <h3>75+<br />Industry Domains</h3>
+              <p>Explore a wide range of in-demand domains.</p>
+            </article>
+            <article class="benefit-card">
+              <div class="benefit-icon"><i class="bi bi-globe2"></i></div>
+              <h3>Remote Internships</h3>
+              <p>Work from anywhere and collaborate globally.</p>
+            </article>
+            <article class="benefit-card">
+              <div class="benefit-icon"><i class="bi bi-bar-chart-fill"></i></div>
+              <h3>Build Real-World Skills</h3>
+              <p>Gain practical skills by working on real projects.</p>
+            </article>
+            <article class="benefit-card">
+              <div class="benefit-icon"><i class="bi bi-mortarboard-fill"></i></div>
+              <h3>Affordable Internship Programs</h3>
+              <p>Quality internships designed to fit your budget.</p>
+            </article>
+            <article class="benefit-card">
+              <div class="benefit-icon"><i class="bi bi-star-fill"></i></div>
+              <h3>Industry-Ready Experience</h3>
+              <p>Stand out with experience that makes you job-ready.</p>
+            </article>
+          </div>
+
+          <article class="project-feature-card">
+            <div class="target-illustration" aria-hidden="true">
+              <span class="target-ring target-ring-one"></span>
+              <span class="target-ring target-ring-two"></span>
+              <span class="target-ring target-ring-three"></span>
+              <span class="target-arrow"></span>
             </div>
+            <div class="project-feature-copy">
+              <h3>Work on Real-World Projects</h3>
+              <p>Apply your knowledge, solve real problems, and create impact.</p>
+            </div>
+            <div class="idea-icon" aria-hidden="true"><i class="bi bi-lightbulb"></i></div>
+          </article>
           </div>
         </div>
-      </div>
     </section>
 
     <section class="section section-alt" id="about">
