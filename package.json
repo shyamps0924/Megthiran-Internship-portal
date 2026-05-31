@@ -1,0 +1,32 @@
+{
+  "name": "internship_portal",
+  "version": "1.0.0",
+  "description": "Megthiran internship portal with student dashboard backend.",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shyamps0924/Megthiran-Internship-portal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shyamps0924/Megthiran-Internship-portal/issues"
+  },
+  "homepage": "https://github.com/shyamps0924/Megthiran-Internship-portal#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "googleapis": "^172.0.0",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1"
+  }
+}

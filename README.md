@@ -1,51 +1,63 @@
 # Megthiran Internship Portal
 
-This project is now a frontend-only website.
+Official Megthiran internship website with a secure student dashboard backend.
 
-## Structure
+## What is included
 
-```text
-internship_portal/
-  assets/
-  fonts/
-  frontend/
-    index.html
-    login.html
-    dashboard.html
-    package-basic.html
-    package-standard.html
-    package-premium.html
-    package-elite.html
-    privacy-policy.html
-    terms-and-conditions.html
-    code-of-conduct.html
-    style.css
-    legal.css
-    script.js
-    legal-content.js
-    legal.js
-  PRIVACY POLICY.docx
-  TERMS AND SERVICES.docx
-  CODE OF CONDUCT.docx
-```
+- Static Megthiran public website in `frontend/`
+- Student login using Intern ID + DOB password
+- Protected student dashboard route
+- Express backend in `backend/`
+- Google Sheets API integration for student records
+- Google Drive API integration for offer letters, certificates, and LORs
+- Domain ID/name parsing from spreadsheet domain columns
+- Package-based internship duration/status calculation
 
-## Run Locally
-
-From the `frontend` folder:
+## Local setup
 
 ```powershell
-cd frontend
-python -m http.server 5500
+npm install
+Copy-Item .env.example .env
+npm start
 ```
 
 Open:
 
-- `http://127.0.0.1:5500/index.html`
+- `http://127.0.0.1:5000/index.html`
+- `http://127.0.0.1:5000/login.html`
 
-## Notes
+## Environment
 
-- The legal pages are frontend-only and render from the bundled content in `frontend/legal-content.js`.
-- The `.docx` files remain in the project root as the original source documents.
-- No backend server, API, or runtime document parsing is required for the website to work.
-# Megthiran-Internship-portal
-Official website for the Megthiran internship platform.
+Set these in `.env`:
+
+```text
+JWT_SECRET=replace-with-a-long-random-secret
+GOOGLE_APPLICATION_CREDENTIALS=./credentials.json
+GOOGLE_SPREADSHEET_ID=your-google-sheet-id
+GOOGLE_SHEET_RANGE=Form Responses 1!A:AZ
+```
+
+Optional Drive folder IDs:
+
+```text
+GOOGLE_DRIVE_OFFER_LETTERS_FOLDER_ID=
+GOOGLE_DRIVE_COMPLETION_CERTIFICATES_FOLDER_ID=
+GOOGLE_DRIVE_LORS_FOLDER_ID=
+```
+
+If folder IDs are omitted, the backend searches for:
+
+```text
+MEGTHIRAN Documents
+  Offer Letters
+  Completion Certificates
+  LORs
+```
+
+Share the spreadsheet and Drive folders with the service account email from `credentials.json`.
+
+## Tests
+
+```powershell
+npm test
+```

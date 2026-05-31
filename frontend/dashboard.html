@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard | MegThiran Internship Portal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="page-dashboard" data-page="dashboard">
@@ -21,162 +22,115 @@
   </div>
 
   <header class="dashboard-navbar">
-    <div class="nav-shell">
+    <div class="nav-shell dashboard-nav-shell">
       <a href="dashboard.html" class="brand-lockup" aria-label="MegThiran dashboard">
         <img src="./assets/megthiran.png" alt="MegThiran logo" class="brand-logo brand-logo-nav" />
       </a>
-      <button type="button" id="logoutButton" class="primary-btn nav-logout">Logout</button>
+      <nav class="dashboard-nav-links" aria-label="Dashboard navigation">
+        <button type="button" id="logoutButton" class="primary-btn nav-logout">Logout</button>
+      </nav>
     </div>
   </header>
 
   <main class="dashboard-shell">
-    <section class="dashboard-hero glass-card">
-      <div class="card-glow"></div>
+    <section class="dashboard-hero premium-dashboard-hero">
       <div class="hero-copy-wrap">
-        <div class="dashboard-header">
-          <h1>Megthiran Internship Dashboard</h1>
-          <p>View your internship details and progress.</p>
-        </div>
+        <p class="eyebrow">Megthiran Student Portal</p>
+        <h1 id="welcomeMessage">Welcome back, Future Innovator</h1>
+        <p id="welcomeSubtext">Your internship journey is shaping your future.</p>
       </div>
-
-      <div class="hero-stat-grid">
-        <article class="mini-stat">
-          <span class="stat-label card-label">Intern ID</span>
-          <strong id="internIdDisplay" class="card-value">M-26IP001</strong>
-        </article>
-        <article class="mini-stat">
-          <span class="stat-label card-label">Plan</span>
-          <strong id="planDisplay" class="card-value">Premium</strong>
-        </article>
-        <article class="mini-stat">
-          <span class="stat-label card-label">Start Date</span>
-          <strong id="startDateDisplay" class="card-value">10 Apr 2026</strong>
-        </article>
-        <article class="mini-stat">
-          <span class="stat-label card-label">Duration</span>
-          <strong id="durationDisplay" class="card-value">30 Days</strong>
-        </article>
+      <div class="hero-identity-card">
+        <span class="identity-label">Logged in as</span>
+        <strong id="heroStudentName">Student</strong>
+        <span id="heroInternId">-</span>
       </div>
     </section>
 
+    <section class="stats-grid" aria-label="Internship summary">
+      <article class="mini-stat stat-card">
+        <span class="stat-icon"><i class="bi bi-mortarboard"></i></span>
+        <span class="stat-label card-label">Enrolled Internship</span>
+        <strong id="enrolledDisplay" class="card-value">1</strong>
+      </article>
+      <article class="mini-stat stat-card">
+        <span class="stat-icon"><i class="bi bi-check2-circle"></i></span>
+        <span class="stat-label card-label">Completed</span>
+        <strong id="completedDisplay" class="card-value">-</strong>
+      </article>
+      <article class="mini-stat stat-card">
+        <span class="stat-icon"><i class="bi bi-activity"></i></span>
+        <span class="stat-label card-label">Internship Status</span>
+        <strong id="statusDisplay" class="card-value">Active</strong>
+      </article>
+      <article class="mini-stat stat-card">
+        <span class="stat-icon"><i class="bi bi-calendar-range"></i></span>
+        <span class="stat-label card-label">Internship Duration</span>
+        <strong id="durationDisplay" class="card-value">-</strong>
+      </article>
+    </section>
+
     <section class="dashboard-grid">
-      <article class="glass-card panel progress-panel">
+      <article class="glass-card panel profile-panel premium-profile-panel">
         <div class="panel-head">
           <div>
-            <p class="eyebrow">Credits System</p>
-            <h2>My Credits</h2>
+            <p class="eyebrow">Profile</p>
+            <h2>Student Details</h2>
           </div>
+          <span id="profileStatusBadge" class="status-pill status-review">Active</span>
         </div>
-        <div class="credits-section">
-          <p>Earn credits by attending sessions and completing tasks.</p>
-          <div class="credits-bar">
-            <div class="credits-fill" id="creditsFill" style="width: 0%;"></div>
-          </div>
-          <div class="credits-info">
-            <span id="creditsEarnedLabel">0% earned</span>
-            <span>100% target</span>
-          </div>
-          <p class="credits-note">
-            Credits increase when:<br />
-            &bull; You attend webinars (via code submission)<br />
-            &bull; You submit tasks/projects (LinkedIn proof)
-          </p>
-        </div>
-      </article>
-
-      <article class="glass-card panel submission-panel">
-        <div class="panel-head">
-          <div>
-            <h2>Submission actions</h2>
-          </div>
-        </div>
-        <div class="action-grid">
-          <a class="action-card" href="https://forms.gle/exampleProjectSubmit" target="_blank" rel="noreferrer">
-            <span>Submit Project</span>
-            <small>Upload your completed project (LinkedIn link)</small>
-          </a>
-          <a class="action-card" href="https://forms.gle/exampleAttendanceSubmit" target="_blank" rel="noreferrer">
-            <span>Attendance Submission</span>
-            <small>Enter webinar code to mark attendance</small>
-          </a>
-        </div>
-      </article>
-
-      <article class="glass-card panel announcements-panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Announcements</p>
-            <h2>Notice board</h2>
-          </div>
-        </div>
-        <div class="announcement-list">
-          <div class="notice-card">
-            <strong>Project 1 deadline extended</strong>
-            <p>Submission window now closes on 18 Apr 2026 by 11:59 PM.</p>
-          </div>
-          <div class="notice-card">
-            <strong>Webinar on Sunday</strong>
-            <p>Join the product strategy session this Sunday at 6:00 PM.</p>
-          </div>
-          <div class="notice-card">
-            <strong>Attendance reminder</strong>
-            <p>Submit attendance before 8:00 PM daily to keep your streak active.</p>
+        <div class="profile-card-shell">
+          <strong id="profileName" class="profile-name">Student Name</strong>
+          <div class="profile-grid">
+            <div><span>Intern ID</span><strong id="profileInternId">-</strong></div>
+            <div><span>Personal Mail ID</span><strong id="profileMail">-</strong></div>
+            <div><span>Domain</span><strong id="profileDomain">-</strong></div>
+            <div><span>Domain ID</span><strong id="profileDomainId">-</strong></div>
+            <div><span>Internship Package</span><strong id="profilePackage">-</strong></div>
+            <div><span>Duration</span><strong id="profileDuration">-</strong></div>
+            <div><span>Start Date</span><strong id="profileStartDate">-</strong></div>
+            <div><span>Completion Date</span><strong id="profileCompletionDate">-</strong></div>
           </div>
         </div>
       </article>
 
-      <article class="glass-card panel resources-panel">
+      <article class="glass-card panel documents-panel">
         <div class="panel-head">
           <div>
-            <h2>Learning Materials</h2>
+            <p class="eyebrow">Drive Documents</p>
+            <h2>Internship Documents</h2>
           </div>
         </div>
-        <p class="resources-copy">Access domain-specific handbooks and reference materials.</p>
-        <div class="resource-grid">
-          <a class="resource-card" href="https://www.perplexity.ai/" target="_blank" rel="noreferrer">AI Tools</a>
-          <a class="resource-card" href="https://developer.mozilla.org/en-US/docs/Learn" target="_blank" rel="noreferrer">Web Dev Resources</a>
-          <a class="resource-card" href="https://www.canva.com/templates/" target="_blank" rel="noreferrer">Templates</a>
+        <div id="documentGrid" class="document-grid"></div>
+      </article>
+
+      <article class="glass-card panel materials-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Materials & Tasks</p>
+            <h2>Learning Resources</h2>
+          </div>
         </div>
+        <div id="materialsGrid" class="resource-list"></div>
       </article>
 
       <article class="glass-card panel sessions-panel">
         <div class="panel-head">
           <div>
-            <p class="eyebrow">Industry Expert Sessions</p>
-            <h2>Upcoming webinars</h2>
+            <p class="eyebrow">Webinars & Orientation</p>
+            <h2>Upcoming Updates</h2>
           </div>
         </div>
-        <div class="session-list">
-          <div class="session-item">
-            <div>
-              <strong>UI Systems for Product Teams</strong>
-              <p>16 Apr 2026 - 6:30 PM</p>
-            </div>
-            <a class="secondary-btn panel-btn" href="https://meet.google.com/" target="_blank" rel="noreferrer">Join</a>
-          </div>
-          <div class="session-item">
-            <div>
-              <strong>AI Workflow for Modern Interns</strong>
-              <p>20 Apr 2026 - 7:00 PM</p>
-            </div>
-            <a class="secondary-btn panel-btn" href="https://meet.google.com/" target="_blank" rel="noreferrer">Join</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="glass-card panel support-panel">
-        <div class="panel-head">
-          <div>
-            <p class="eyebrow">Support / Contact Mentor</p>
-            <h2>Need help?</h2>
-          </div>
-        </div>
-        <p class="support-copy">Reach your assigned mentor instantly for blockers, guidance, or review support.</p>
-        <a class="primary-btn panel-btn" href="https://wa.me/919999999999" target="_blank" rel="noreferrer">Contact Mentor</a>
+        <div id="webinarList" class="session-list"></div>
+        <div id="announcementList" class="announcement-strip"></div>
       </article>
     </section>
   </main>
 
+  <footer class="dashboard-footer">
+    <p>&copy; 2026 MEGTHIRAN. All rights reserved.</p>
+  </footer>
+
+  <script src="dashboard-messages.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

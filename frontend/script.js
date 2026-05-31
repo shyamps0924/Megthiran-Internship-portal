@@ -1,22 +1,18 @@
 (function () {
   const STORAGE_KEYS = {
     internId: 'megthiranInternId',
+    authToken: 'megthiranAuthToken',
+    studentName: 'megthiranStudentName',
+    loginError: 'megthiranLoginError',
     loginGateNotice: 'megthiranLoginGateNotice',
     splashSessionSeen: 'megthiranSplashSessionSeen',
   };
 
   const INTERN_ID_REGEX = /^M\d{2}IP\d{3}$/;
   const DOB_REGEX = /^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/;
-  const DASHBOARD_LAUNCH_AT = new Date('2026-06-01T00:00:00+05:30').getTime();
+  const API_BASE_URL = window.MEGTHIRAN_API_BASE_URL || resolveApiBaseUrl();
   const SPLASH_DURATION_MS = 2150;
   const SPLASH_EXIT_MS = 650;
-  const DASHBOARD_DATA = {
-    name: 'Intern Name',
-    plan: 'Premium',
-    startDate: '10 Apr 2026',
-    duration: '8 Weeks',
-    creditsEarned: 0,
-  };
 
   let navBackdrop = null;
   let pendingGateModal = false;
@@ -43,17 +39,8 @@
       document.body.classList.add('site-home');
     }
 
-    if (page === 'login' && !isDashboardAvailable()) {
-      redirectWithGateNotice('index.html');
-      return;
-    }
-
-    if (page === 'dashboard' && !isDashboardAvailable()) {
-      redirectWithGateNotice('index.html');
-      return;
-    }
-
     initSiteNav();
+    syncAuthNavigation();
     initHashScroll();
     initLoginGate();
     initDomainShowcase();
@@ -258,6 +245,41 @@
       if (window.innerWidth > 780) {
         closeMenu();
       }
+    });
+  }
+
+  function syncAuthNavigation() {
+    const token = getStoredToken();
+    const navLinks = document.querySelectorAll('.nav-links');
+
+    navLinks.forEach(function (nav) {
+      const links = Array.from(nav.querySelectorAll('a'));
+
+      links.forEach(function (link) {
+        const text = (link.textContent || '').trim().toLowerCase();
+        const href = link.getAttribute('href') || '';
+
+        if (!token) {
+          link.hidden = false;
+          return;
+        }
+
+        const isHome = text === 'home';
+        const isContact = text === 'contact';
+        const isLogin = link.classList.contains('nav-login-btn') || href.includes('login.html');
+
+        link.hidden = !(isHome || isContact || isLogin);
+
+        if (isLogin) {
+          link.textContent = 'Logout';
+          link.href = '#logout';
+          link.addEventListener('click', function (event) {
+            event.preventDefault();
+            clearAuthSession();
+            window.location.href = 'index.html';
+          }, { once: true });
+        }
+      });
     });
   }
 
@@ -689,18 +711,6 @@
   }
 
   function initLoginGate() {
-    const locked = !isDashboardAvailable();
-    const loginLinks = document.querySelectorAll('a[href="login.html"], a[href="./login.html"], .nav-login-btn');
-
-    if (locked) {
-      loginLinks.forEach(function (link) {
-        link.addEventListener('click', function (event) {
-          event.preventDefault();
-          openLoginGateModal();
-        });
-      });
-    }
-
     if (sessionStorage.getItem(STORAGE_KEYS.loginGateNotice) === 'true') {
       pendingGateModal = true;
       if (pageEntryComplete) {
@@ -878,8 +888,10 @@
     const dobInput = document.getElementById('dob');
     const internIdError = document.getElementById('internIdError');
     const dobError = document.getElementById('dobError');
+    const formStatus = document.getElementById('loginFormStatus');
+    const submitButton = form ? form.querySelector('[type="submit"]') : null;
 
-    if (getStoredInternId()) {
+    if (getStoredToken()) {
       window.location.replace('dashboard.html');
       return;
     }
@@ -888,13 +900,19 @@
       return;
     }
 
+    const pendingLoginError = sessionStorage.getItem(STORAGE_KEYS.loginError);
+    if (pendingLoginError && formStatus) {
+      formStatus.textContent = pendingLoginError;
+      sessionStorage.removeItem(STORAGE_KEYS.loginError);
+    }
+
     internIdInput.addEventListener('input', function () {
       internIdInput.value = internIdInput.value.toUpperCase();
     });
 
-    form.addEventListener('submit', function (event) {
+    form.addEventListener('submit', async function (event) {
       event.preventDefault();
-      clearErrors(internIdError, dobError);
+      clearErrors(internIdError, dobError, formStatus);
 
       const internId = internIdInput.value.trim().toUpperCase();
       const dob = dobInput.value.trim();
@@ -917,22 +935,50 @@
         return;
       }
 
-      localStorage.setItem(STORAGE_KEYS.internId, internId);
-      window.location.replace('dashboard.html');
+      setLoading(submitButton, true, 'Checking...');
+
+      try {
+        const response = await apiRequest('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ internId: internId, password: dob }),
+        });
+
+        localStorage.setItem(STORAGE_KEYS.authToken, response.token);
+        localStorage.setItem(STORAGE_KEYS.internId, response.student.internId);
+        localStorage.setItem(STORAGE_KEYS.studentName, response.student.name || '');
+        window.location.replace('dashboard.html');
+      } catch (error) {
+        if (formStatus) {
+          formStatus.textContent = error.message || 'Login failed. Please try again.';
+        }
+      } finally {
+        setLoading(submitButton, false, 'Login');
+      }
     });
   }
 
-  function initDashboardPage() {
-    const internId = getStoredInternId();
+  async function initDashboardPage() {
+    const token = getStoredToken();
 
-    if (!internId) {
+    if (!token) {
       window.location.replace('login.html');
       return;
     }
 
-    populateDashboard(internId);
     bindLogout();
     bindBackGuard();
+
+    try {
+      const data = await apiRequest('/api/student/dashboard', {
+        headers: getAuthHeaders(),
+      });
+
+      populateDashboard(data);
+    } catch (error) {
+      sessionStorage.setItem(STORAGE_KEYS.loginError, error.message || 'Session expired. Please login again.');
+      clearAuthSession();
+      window.location.replace('login.html');
+    }
   }
 
   function validateInternId(value) {
@@ -967,13 +1013,13 @@
     );
   }
 
-  function isDashboardAvailable() {
-    return Date.now() >= DASHBOARD_LAUNCH_AT;
-  }
-
   function redirectWithGateNotice(destination) {
     sessionStorage.setItem(STORAGE_KEYS.loginGateNotice, 'true');
     window.location.replace(destination);
+  }
+
+  function getStoredToken() {
+    return localStorage.getItem(STORAGE_KEYS.authToken) || '';
   }
 
   function getStoredInternId() {
@@ -981,25 +1027,91 @@
     return validateInternId(value).valid ? value : '';
   }
 
-  function populateDashboard(internId) {
-    const creditsFill = document.getElementById('creditsFill');
-    const planDurationMap = {
-      Basic: '15 Days',
-      Standard: '25 Days',
-      Premium: '30 Days',
-      Elite: '45 Days',
+  function getAuthHeaders() {
+    return {
+      Authorization: 'Bearer ' + getStoredToken(),
     };
-    const headerDuration = planDurationMap[DASHBOARD_DATA.plan] || DASHBOARD_DATA.duration;
+  }
 
-    setText('internIdDisplay', internId);
-    setText('planDisplay', DASHBOARD_DATA.plan);
-    setText('startDateDisplay', DASHBOARD_DATA.startDate);
-    setText('durationDisplay', headerDuration);
-    setText('creditsEarnedLabel', DASHBOARD_DATA.creditsEarned + '% earned');
+  function resolveApiBaseUrl() {
+  return 'http://localhost:5000';
+}
 
-    if (creditsFill) {
-      creditsFill.style.width = DASHBOARD_DATA.creditsEarned + '%';
+  async function apiRequest(path, options) {
+    let response;
+
+    try {
+      response = await fetch(API_BASE_URL + path, Object.assign({
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }, options || {}, {
+        headers: Object.assign({
+          'Content-Type': 'application/json',
+        }, (options && options.headers) || {}),
+      }));
+    } catch (error) {
+      console.error('[Megthiran API] Network request failed', {
+        url: API_BASE_URL + path,
+        message: error.message,
+      });
+      throw new Error('Unable to reach the backend server. Please make sure it is running on http://localhost:5000.');
     }
+
+    const data = await response.json().catch(function () {
+      return {};
+    });
+
+    if (!response.ok) {
+      console.error('[Megthiran API] Request failed', {
+        url: API_BASE_URL + path,
+        status: response.status,
+        message: data.message,
+      });
+      throw new Error(data.message || 'Request failed.');
+    }
+
+    return data;
+  }
+
+  function clearAuthSession() {
+    localStorage.removeItem(STORAGE_KEYS.authToken);
+    localStorage.removeItem(STORAGE_KEYS.internId);
+    localStorage.removeItem(STORAGE_KEYS.studentName);
+  }
+
+  function populateDashboard(data) {
+    const student = data.student || {};
+    const stats = data.stats || {};
+
+    setDailyWelcome(student.name);
+    setText('heroStudentName', student.name || 'Student');
+    setText('heroInternId', student.internId || '-');
+    setText('enrolledDisplay', stats.enrolledInternship || '1');
+    setText('completedDisplay', stats.completed || '-');
+    setText('statusDisplay', stats.status || student.status || '-');
+    setText('durationDisplay', stats.duration || student.durationLabel || '-');
+
+    setText('profileName', student.name || '-');
+    setText('profileInternId', student.internId || '-');
+    setText('profileMail', student.personalMail || '-');
+    setText('profileDomain', student.domain || '-');
+    setText('profileDomainId', student.domainId || '-');
+    setText('profilePackage', student.internshipPackage || '-');
+    setText('profileDuration', student.durationLabel || '-');
+    setText('profileStartDate', student.startDate || '-');
+    setText('profileCompletionDate', student.completionDate || '-');
+    setText('profileStatusBadge', student.status || '-');
+
+    const badge = document.getElementById('profileStatusBadge');
+    if (badge) {
+      badge.classList.toggle('status-approved', student.status === 'Completed');
+      badge.classList.toggle('status-review', student.status !== 'Completed');
+    }
+
+    renderDocuments(data.documents || {});
+    renderMaterials(data.materials || []);
+    renderWebinars(data.webinars || [], data.announcements || []);
   }
 
   function bindLogout() {
@@ -1009,7 +1121,7 @@
     }
 
     logoutButton.addEventListener('click', function () {
-      localStorage.removeItem(STORAGE_KEYS.internId);
+      clearAuthSession();
       window.location.replace('login.html');
     });
   }
@@ -1017,8 +1129,110 @@
   function bindBackGuard() {
     history.pushState({ dashboardGuard: true }, '', window.location.href);
     window.addEventListener('popstate', function () {
+      clearAuthSession();
       window.location.replace('index.html');
     });
+  }
+
+  function setDailyWelcome(studentName) {
+    const messages = window.MEGTHIRAN_DASHBOARD_MESSAGES || ['Welcome back, Future Innovator'];
+    const dayIndex = Math.floor(Date.now() / 86400000) % messages.length;
+    const message = messages[dayIndex];
+
+    setText('welcomeMessage', message);
+    setText('welcomeSubtext', studentName ? 'Good to see you, ' + studentName + '. Your dashboard is ready.' : 'Your internship journey is shaping your future.');
+  }
+
+  function renderDocuments(documents) {
+    const grid = document.getElementById('documentGrid');
+    if (!grid) {
+      return;
+    }
+
+    const items = [
+      documents.offerLetter,
+      documents.completionCertificate,
+      documents.lor,
+    ].filter(function (documentItem) {
+      return documentItem && documentItem.visible !== false;
+    });
+
+    grid.innerHTML = items.map(function (documentItem) {
+      const file = documentItem.file || {};
+      const isAvailable = Boolean(documentItem.available && file.viewUrl);
+      const viewHref = isAvailable ? file.viewUrl : '#';
+      const downloadHref = isAvailable ? file.downloadUrl : '#';
+
+      return [
+        '<article class="document-card ' + (isAvailable ? 'is-available' : 'is-unavailable') + '">',
+        '  <div class="document-icon"><i class="bi bi-file-earmark-text"></i></div>',
+        '  <div class="document-copy">',
+        '    <h3>' + escapeHtml(documentItem.title || 'Document') + '</h3>',
+        '    <p>' + escapeHtml(documentItem.message || (isAvailable ? 'Available' : 'Not available')) + '</p>',
+        '  </div>',
+        '  <div class="document-actions">',
+        '    <a class="secondary-btn panel-btn' + (isAvailable ? '' : ' is-disabled') + '" href="' + escapeAttribute(viewHref) + '"' + (isAvailable ? ' target="_blank" rel="noreferrer"' : ' aria-disabled="true"') + '>View</a>',
+        '    <a class="primary-btn panel-btn' + (isAvailable ? '' : ' is-disabled') + '" href="' + escapeAttribute(downloadHref) + '"' + (isAvailable ? ' target="_blank" rel="noreferrer"' : ' aria-disabled="true"') + '>Download</a>',
+        '  </div>',
+        '</article>',
+      ].join('');
+    }).join('');
+  }
+
+  function renderMaterials(materials) {
+    const grid = document.getElementById('materialsGrid');
+    if (!grid) {
+      return;
+    }
+
+    grid.innerHTML = materials.map(function (material) {
+      return [
+        '<article class="material-card">',
+        '  <span class="material-type">' + escapeHtml(material.type || 'Resource') + '</span>',
+        '  <h3>' + escapeHtml(material.title || 'Material') + '</h3>',
+        '  <p>' + escapeHtml(material.description || '') + '</p>',
+        '  <div class="document-actions">',
+        '    <a class="secondary-btn panel-btn" href="' + escapeAttribute(material.viewUrl || '#') + '" target="_blank" rel="noreferrer">Open</a>',
+        '    <a class="primary-btn panel-btn" href="' + escapeAttribute(material.downloadUrl || '#') + '" target="_blank" rel="noreferrer">Download</a>',
+        '  </div>',
+        '</article>',
+      ].join('');
+    }).join('');
+  }
+
+  function renderWebinars(webinars, announcements) {
+    const webinarList = document.getElementById('webinarList');
+    const announcementList = document.getElementById('announcementList');
+
+    if (webinarList) {
+      webinarList.innerHTML = webinars.map(function (webinar) {
+        return [
+          '<article class="session-item">',
+          '  <div>',
+          '    <strong>' + escapeHtml(webinar.title || 'Session') + '</strong>',
+          '    <p>' + escapeHtml([webinar.date, webinar.time].filter(Boolean).join(' - ')) + '</p>',
+          '    <p>' + escapeHtml(webinar.note || '') + '</p>',
+          '  </div>',
+          '  <a class="secondary-btn panel-btn" href="' + escapeAttribute(webinar.link || '#') + '" target="_blank" rel="noreferrer">Join</a>',
+          '</article>',
+        ].join('');
+      }).join('');
+    }
+
+    if (announcementList) {
+      announcementList.innerHTML = announcements.map(function (announcement) {
+        return '<span><i class="bi bi-bell"></i>' + escapeHtml(announcement) + '</span>';
+      }).join('');
+    }
+  }
+
+  function setLoading(button, isLoading, label) {
+    if (!button) {
+      return;
+    }
+
+    button.disabled = isLoading;
+    button.textContent = label;
   }
 
   function setText(id, value) {
@@ -1026,6 +1240,10 @@
     if (element) {
       element.textContent = value;
     }
+  }
+
+  function escapeAttribute(value) {
+    return escapeHtml(value).replace(/`/g, '&#96;');
   }
 
   function clearErrors() {
