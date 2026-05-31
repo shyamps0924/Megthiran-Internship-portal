@@ -1034,7 +1034,7 @@
   }
 
   function resolveApiBaseUrl() {
-  return 'http://localhost:5000';
+  return 'https://megthiran-internship-portal-1.onrender.com';
 }
 
   async function apiRequest(path, options) {
