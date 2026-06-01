@@ -359,6 +359,10 @@ async function findOfferLetterFileByStudentName(studentName, context = createDri
     }
 
     files = response.data.files || [];
+    console.log(
+  'Drive File Names:',
+  files.map(f => f.name)
+);
     context.searches.set(cacheKey, files);
   }
 
