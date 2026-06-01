@@ -10,6 +10,9 @@ let authClientPromise;
 
 function getGoogleAuthClient() {
   if (!authClientPromise) {
+    console.log("EMAIL:", process.env.GOOGLE_CLIENT_EMAIL);
+    console.log("KEY START:", process.env.GOOGLE_PRIVATE_KEY?.substring(0, 30));
+    console.log("KEY END:", process.env.GOOGLE_PRIVATE_KEY?.slice(-30));
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
