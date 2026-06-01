@@ -1055,7 +1055,7 @@
         url: API_BASE_URL + path,
         message: error.message,
       });
-      throw new Error('Unable to reach the backend server. Please make sure it is running on http://localhost:5000.');
+      throw new Error('Unable to reach the backend server. Please try again later.');
     }
 
     const data = await response.json().catch(function () {
