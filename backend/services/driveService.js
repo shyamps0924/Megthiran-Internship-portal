@@ -324,9 +324,19 @@ async function findFirstPdfRecursively(folder, context = createDriveRequestConte
 async function findDomainMaterial({ domainName, context }) {
   const requestContext = context || createDriveRequestContext();
   const normalizedDomain = normalizeDomain(domainName);
+
+  console.log(
+    'Configured Project Root Folder:',
+    config.google.projectDriveRootFolderName
+  );
+
   const projectRoot = await findFolderByName(config.google.projectDriveRootFolderName);
   const projectList = await findFolderByName('Project List', projectRoot?.id) ||
     await findFolderByName('Project List');
+
+  console.log('Project Root Found:', projectRoot);
+  console.log('Project List Found:', projectList);
+
   const topLevelFolders = await listChildFolders(projectList?.id, requestContext);
   const technicalFolder = topLevelFolders.find((folder) => normalizeDomain(folder.name) === 'technical') || null;
   const match = await findMatchingDomainFolder(projectList?.id, domainName, requestContext);
