@@ -108,6 +108,32 @@ async function findFolderByName(name, parentId) {
   return response.data.files?.[0] || null;
 }
 
+async function findFolderById(folderId) {
+  if (!folderId) {
+    return null;
+  }
+
+  const drive = await getDriveClient();
+  let response;
+
+  try {
+    response = await drive.files.get({
+      fileId: folderId,
+      fields: 'id, name, mimeType',
+      supportsAllDrives: true,
+    });
+  } catch (error) {
+    logger.error('Google Drive folder fetch by ID failed.', {
+      folderId,
+      status: error.code || error.response?.status,
+      message: error.message,
+    });
+    return null;
+  }
+
+  return isDriveFolder(response.data) ? response.data : null;
+}
+
 async function listChildFolders(parentId, context = createDriveRequestContext()) {
   if (!parentId) {
     return [];
@@ -147,6 +173,9 @@ async function listChildFolders(parentId, context = createDriveRequestContext())
   }
 
   const folders = response.data.files || [];
+  folders.forEach((folder) => {
+    console.log('Child Folder:', folder.name, folder.id);
+  });
   context.searches.set(cacheKey, folders);
   return folders;
 }
@@ -266,10 +295,10 @@ async function findMatchingDomainFolder(projectListFolderId, domainName, context
   while (queue.length) {
     const { folder, path: folderPath } = queue.shift();
 
-    console.log('Checking Folder:', folder.name);
+    console.log('Checking Folder:', folder.name, folder.id);
 
     if (normalizeDomain(folder.name) === target) {
-      console.log('Matched Domain Folder:', folder.name);
+      console.log('Matched Domain Folder:', folder.name, folder.id);
       return {
         domainFolder: folder,
         folderPath,
@@ -277,7 +306,7 @@ async function findMatchingDomainFolder(projectListFolderId, domainName, context
       };
     }
 
-    console.log('Entering Folder:', folder.name);
+    console.log('Entering Folder:', folder.name, folder.id);
     const childFolders = await listChildFolders(folder.id, context);
     queue.push(...childFolders.map((childFolder) => ({
       folder: childFolder,
@@ -297,12 +326,12 @@ async function findFirstPdfRecursively(folder, context = createDriveRequestConte
     return null;
   }
 
-  console.log('Entering Folder:', folder.name);
+  console.log('Entering Folder:', folder.name, folder.id);
   const items = await listFolderItems(folder.id, context);
 
   for (const item of items) {
     if (isDriveFolder(item)) {
-      console.log('Checking Folder:', item.name);
+      console.log('Checking Folder:', item.name, item.id);
       const pdfFile = await findFirstPdfRecursively(item, context);
 
       if (pdfFile) {
@@ -313,7 +342,7 @@ async function findFirstPdfRecursively(folder, context = createDriveRequestConte
     }
 
     if (isPdfFile(item)) {
-      console.log('PDF Found:', item.name);
+      console.log('PDF Found:', item.name, item.id);
       return item;
     }
   }
@@ -324,15 +353,17 @@ async function findFirstPdfRecursively(folder, context = createDriveRequestConte
 async function findDomainMaterial({ domainName, context }) {
   const requestContext = context || createDriveRequestContext();
   const normalizedDomain = normalizeDomain(domainName);
+  const ROOT_FOLDER_ID = config.google.projectDriveRootFolderId;
 
-  console.log(
-    'Configured Project Root Folder:',
-    config.google.projectDriveRootFolderName
-  );
+  console.log('Configured Root Folder Name:', config.google.projectDriveRootFolderName);
+  console.log('Configured Root Folder ID:', config.google.projectDriveRootFolderId);
+  console.log('Root Folder ID:', ROOT_FOLDER_ID);
 
-  const projectRoot = await findFolderByName(config.google.projectDriveRootFolderName);
-  const projectList = await findFolderByName('Project List', projectRoot?.id) ||
-    await findFolderByName('Project List');
+  const projectRoot = ROOT_FOLDER_ID
+    ? await findFolderById(ROOT_FOLDER_ID)
+    : await findFolderByName(config.google.projectDriveRootFolderName);
+  const rootChildFolders = await listChildFolders(projectRoot?.id, requestContext);
+  const projectList = rootChildFolders.find((folder) => normalizeDomain(folder.name) === 'project list') || null;
 
   console.log('Project Root Found:', projectRoot);
   console.log('Project List Found:', projectList);

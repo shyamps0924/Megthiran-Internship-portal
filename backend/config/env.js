@@ -55,6 +55,10 @@ const config = {
       process.env.GOOGLE_DRIVE_PROJECT_ROOT_FOLDER_NAME ||
       'MegThiran1.0 Internship',
 
+    projectDriveRootFolderId:
+      process.env.PROJECT_DRIVE_ROOT_FOLDER_ID ||
+      '1nMhYhPZLd9_a0MM6VTDlUd9Tk1RdpqQs',
+
     offerLettersFolderId:
       process.env.GOOGLE_DRIVE_OFFER_LETTERS_FOLDER_ID ||
       '1WpP8HkFphTtFRhtUUvvxzStdZcHpGDKV',
