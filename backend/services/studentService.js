@@ -6,7 +6,8 @@ const {
   normalizeText,
   pickValue,
 } = require('./sheetsService');
-const { findDomainMaterial, getStudentDocuments } = require('./driveService');
+const { getStudentDocuments } = require('./driveService');
+const config = require('../config/env');
 const { normalizeDateForPassword } = require('../utils/dateUtils');
 const { extractDomain } = require('../utils/domainParser');
 const { buildInternshipSummary } = require('../utils/internship');
@@ -264,7 +265,15 @@ async function getDashboardData({ internId, rowNumber }) {
 
   const profile = toStudentProfile(student);
   let documents;
-  let domainMaterial = null;
+  const domainMaterialsUrl = config.google.projectDriveRootFolderId
+    ? `https://drive.google.com/drive/folders/${config.google.projectDriveRootFolderId}`
+    : '';
+  const domainMaterial = domainMaterialsUrl
+    ? {
+      title: 'Domain Materials',
+      openUrl: domainMaterialsUrl,
+    }
+    : null;
 
   try {
     documents = await getStudentDocuments({
@@ -276,28 +285,6 @@ async function getDashboardData({ internId, rowNumber }) {
   } catch (error) {
     console.error('Google Drive Search Failed:', error.message);
     documents = unavailableDocuments();
-  }
-
-  try {
-    const materialFile = await findDomainMaterial({
-      domainName: profile.domain,
-    });
-
-    if (materialFile) {
-      domainMaterial = {
-        fileId: materialFile.id,
-        fileName: materialFile.name,
-        openUrl: materialFile.viewUrl,
-        downloadUrl: materialFile.downloadUrl,
-      };
-    }
-  } catch (error) {
-    console.error('Google Drive Domain Material Search Failed:', error.message);
-    logger.error('Domain material lookup failed.', {
-      internId: profile.internId,
-      domain: profile.domain,
-      message: error.message,
-    });
   }
 
   const offerLetter = documents.offerLetter?.file
@@ -335,11 +322,10 @@ async function getDashboardData({ internId, rowNumber }) {
     domainMaterial,
     materials: domainMaterial ? [
       {
-        title: domainMaterial.fileName,
-        type: 'PDF',
-        description: 'Project material for your selected internship domain.',
+        title: domainMaterial.title,
+        type: 'Drive Folder',
+        description: 'Open the shared Google Drive folder for all domain materials.',
         viewUrl: domainMaterial.openUrl,
-        downloadUrl: domainMaterial.downloadUrl,
       },
     ] : [],
     webinars: [

@@ -1487,6 +1487,32 @@ select:focus {
   margin-top: 30px;
 }
 
+.registration-closed-inline {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 34rem;
+}
+
+.registration-closed-inline p,
+.registration-closed-actions + p {
+  margin: 0;
+}
+
+.registration-closed-inline p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.registration-closed-button {
+  cursor: default;
+  text-align: center;
+  pointer-events: none;
+}
+
+.registration-closed-actions {
+  margin-top: 1.25rem;
+}
+
 .package-head {
   border-bottom: 1px solid rgba(16, 42, 67, 0.1);
   padding-bottom: 0.9rem;

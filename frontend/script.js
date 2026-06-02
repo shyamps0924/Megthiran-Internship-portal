@@ -1190,9 +1190,9 @@
     if (!materials.length) {
       grid.innerHTML = [
         '<article class="material-card">',
-        '  <span class="material-type">PDF</span>',
-        '  <h3>No domain material found for your selected domain.</h3>',
-        '  <p>Project material for your selected internship domain.</p>',
+        '  <span class="material-type">Drive Folder</span>',
+        '  <h3>Domain Materials</h3>',
+        '  <p>Domain materials are currently unavailable.</p>',
         '</article>',
       ].join('');
       return;
@@ -1206,8 +1206,7 @@
         '  <h3>' + escapeHtml(material.title || 'Material') + '</h3>',
         '  <p>' + escapeHtml(material.description || '') + '</p>',
         '  <div class="document-actions">',
-        '    <a class="secondary-btn panel-btn" href="' + escapeAttribute(openUrl) + '" onclick="window.open(this.href, \'_blank\', \'noreferrer\'); return false;">Open</a>',
-        '    <a class="primary-btn panel-btn" href="' + escapeAttribute(material.downloadUrl || '#') + '" target="_blank" rel="noreferrer">Download</a>',
+        '    <a class="primary-btn panel-btn" href="' + escapeAttribute(openUrl) + '" onclick="window.open(this.href, \'_blank\', \'noreferrer\'); return false;">Open Domain Materials</a>',
         '  </div>',
         '</article>',
       ].join('');
@@ -1222,11 +1221,10 @@
 
     renderMaterials([
       {
-        type: 'PDF',
-        title: domainMaterial.fileName || 'Project Material',
-        description: 'Project material for your selected internship domain.',
+        type: 'Drive Folder',
+        title: domainMaterial.title || 'Domain Materials',
+        description: 'Open the shared Google Drive folder for all domain materials.',
         viewUrl: domainMaterial.openUrl,
-        downloadUrl: domainMaterial.downloadUrl,
       },
     ]);
   }

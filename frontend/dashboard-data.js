@@ -1,40 +1,33 @@
 (function () {
+  const domainMaterialsUrl = 'https://drive.google.com/drive/folders/1nMhYhPZLd9_a0MM6VTDlUd9Tk1RdpqQs';
+  const sharedMaterials = [
+    {
+      title: 'Domain Materials',
+      type: 'Drive Folder',
+      fileUrl: domainMaterialsUrl,
+    },
+  ];
+
   const domains = [
     {
       id: 'D01',
       name: 'Business Analytics',
-      materials: [
-        { title: 'Module 1 Notes', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 2 Case Study Notes', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 3 Reporting Guide', type: 'pdf', fileUrl: '#' },
-      ],
+      materials: sharedMaterials,
     },
     {
       id: 'D02',
       name: 'Frontend Development',
-      materials: [
-        { title: 'Module 1 HTML Notes', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 2 CSS Notes', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 3 JavaScript Notes', type: 'pdf', fileUrl: '#' },
-      ],
+      materials: sharedMaterials,
     },
     {
       id: 'D03',
       name: 'Backend Engineering',
-      materials: [
-        { title: 'Module 1 API Design Notes', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 2 Database Notes', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 3 Authentication Notes', type: 'pdf', fileUrl: '#' },
-      ],
+      materials: sharedMaterials,
     },
     {
       id: 'D04',
       name: 'UI/UX Design',
-      materials: [
-        { title: 'Module 1 UX Principles', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 2 Wireframe Notes', type: 'pdf', fileUrl: '#' },
-        { title: 'Module 3 Design System Notes', type: 'pdf', fileUrl: '#' },
-      ],
+      materials: sharedMaterials,
     },
   ];
 
