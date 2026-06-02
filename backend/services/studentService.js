@@ -347,7 +347,7 @@ async function getDashboardData({ internId, rowNumber }) {
         title: 'Internship Orientation',
         date: '02 Jun 2026',
         time: '6:00 PM IST',
-        link: 'https://meet.google.com/',
+        link: 'https://meet.google.com/tpb-zqvy-ajv',
         note: 'Program flow, expectations, project access, and document walkthrough.',
       },
     ],

@@ -62,7 +62,7 @@ function normalizeDomain(name) {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, ' ')
-    .replace(/[&/_,.-]+/g, ' ')
+    .replace(/[&/_,.\-()[\]{}]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -196,6 +196,56 @@ async function listPdfFiles(parentId, context = createDriveRequestContext()) {
   return files;
 }
 
+async function listFolderItems(parentId, context = createDriveRequestContext()) {
+  if (!parentId) {
+    return [];
+  }
+
+  const cacheKey = JSON.stringify({
+    type: 'folderItems',
+    parentId,
+  });
+
+  if (context.searches.has(cacheKey)) {
+    return context.searches.get(cacheKey);
+  }
+
+  const drive = await getDriveClient();
+  let response;
+
+  try {
+    response = await drive.files.list({
+      q: [
+        `'${escapeDriveQueryValue(parentId)}' in parents`,
+        'trashed = false',
+      ].join(' and '),
+      fields: 'files(id, name, webViewLink, mimeType)',
+      pageSize: 1000,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+  } catch (error) {
+    logger.error('Google Drive folder item fetch failed.', {
+      parentId,
+      status: error.code || error.response?.status,
+      message: error.message,
+    });
+    throw Object.assign(new Error('Unable to search Google Drive files.'), { statusCode: 502 });
+  }
+
+  const items = response.data.files || [];
+  context.searches.set(cacheKey, items);
+  return items;
+}
+
+function isDriveFolder(file) {
+  return file?.mimeType === 'application/vnd.google-apps.folder';
+}
+
+function isPdfFile(file) {
+  return file?.mimeType === 'application/pdf' || /\.pdf$/i.test(file?.name || '');
+}
+
 async function findMatchingDomainFolder(projectListFolderId, domainName, context = createDriveRequestContext()) {
   const target = normalizeDomain(domainName);
 
@@ -216,7 +266,10 @@ async function findMatchingDomainFolder(projectListFolderId, domainName, context
   while (queue.length) {
     const { folder, path: folderPath } = queue.shift();
 
+    console.log('Checking Folder:', folder.name);
+
     if (normalizeDomain(folder.name) === target) {
+      console.log('Matched Domain Folder:', folder.name);
       return {
         domainFolder: folder,
         folderPath,
@@ -224,6 +277,7 @@ async function findMatchingDomainFolder(projectListFolderId, domainName, context
       };
     }
 
+    console.log('Entering Folder:', folder.name);
     const childFolders = await listChildFolders(folder.id, context);
     queue.push(...childFolders.map((childFolder) => ({
       folder: childFolder,
@@ -238,23 +292,30 @@ async function findMatchingDomainFolder(projectListFolderId, domainName, context
   };
 }
 
-async function findFirstPdfForDomainFolder(domainFolder, context = createDriveRequestContext()) {
-  if (!domainFolder?.id) {
+async function findFirstPdfRecursively(folder, context = createDriveRequestContext()) {
+  if (!folder?.id) {
     return null;
   }
 
-  const queue = [domainFolder];
+  console.log('Entering Folder:', folder.name);
+  const items = await listFolderItems(folder.id, context);
 
-  while (queue.length) {
-    const folder = queue.shift();
-    const pdfFiles = await listPdfFiles(folder.id, context);
+  for (const item of items) {
+    if (isDriveFolder(item)) {
+      console.log('Checking Folder:', item.name);
+      const pdfFile = await findFirstPdfRecursively(item, context);
 
-    if (pdfFiles.length) {
-      return pdfFiles[0];
+      if (pdfFile) {
+        return pdfFile;
+      }
+
+      continue;
     }
 
-    const childFolders = await listChildFolders(folder.id, context);
-    queue.push(...childFolders);
+    if (isPdfFile(item)) {
+      console.log('PDF Found:', item.name);
+      return item;
+    }
   }
 
   return null;
@@ -273,7 +334,7 @@ async function findDomainMaterial({ domainName, context }) {
   const clusterFolder = match.folderPath.length > 1
     ? match.folderPath[match.folderPath.length - 2]
     : null;
-  const pdfFile = await findFirstPdfForDomainFolder(domainFolder, requestContext);
+  const pdfFile = await findFirstPdfRecursively(domainFolder, requestContext);
   const material = fileResponse(pdfFile);
   const domainMaterial = material ? {
     fileId: material.id,
