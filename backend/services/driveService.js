@@ -53,6 +53,17 @@ function normalizeMatchValue(value) {
   return normalizeDriveName(value)
     .replace(/\.[a-z0-9]+$/i, '')
     .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeDomain(name) {
+  return String(name || '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[&/_,.-]+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
@@ -95,6 +106,204 @@ async function findFolderByName(name, parentId) {
   }
 
   return response.data.files?.[0] || null;
+}
+
+async function listChildFolders(parentId, context = createDriveRequestContext()) {
+  if (!parentId) {
+    return [];
+  }
+
+  const cacheKey = JSON.stringify({
+    type: 'childFolders',
+    parentId,
+  });
+
+  if (context.searches.has(cacheKey)) {
+    return context.searches.get(cacheKey);
+  }
+
+  const drive = await getDriveClient();
+  let response;
+
+  try {
+    response = await drive.files.list({
+      q: [
+        `'${escapeDriveQueryValue(parentId)}' in parents`,
+        "mimeType = 'application/vnd.google-apps.folder'",
+        'trashed = false',
+      ].join(' and '),
+      fields: 'files(id, name)',
+      pageSize: 1000,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+  } catch (error) {
+    logger.error('Google Drive child folder fetch failed.', {
+      parentId,
+      status: error.code || error.response?.status,
+      message: error.message,
+    });
+    throw Object.assign(new Error('Unable to search Google Drive folders.'), { statusCode: 502 });
+  }
+
+  const folders = response.data.files || [];
+  context.searches.set(cacheKey, folders);
+  return folders;
+}
+
+async function listPdfFiles(parentId, context = createDriveRequestContext()) {
+  if (!parentId) {
+    return [];
+  }
+
+  const cacheKey = JSON.stringify({
+    type: 'pdfFiles',
+    parentId,
+  });
+
+  if (context.searches.has(cacheKey)) {
+    return context.searches.get(cacheKey);
+  }
+
+  const drive = await getDriveClient();
+  let response;
+
+  try {
+    response = await drive.files.list({
+      q: [
+        `'${escapeDriveQueryValue(parentId)}' in parents`,
+        'trashed = false',
+      ].join(' and '),
+      fields: 'files(id, name, webViewLink, mimeType)',
+      pageSize: 50,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+  } catch (error) {
+    logger.error('Google Drive PDF file fetch failed.', {
+      parentId,
+      status: error.code || error.response?.status,
+      message: error.message,
+    });
+    throw Object.assign(new Error('Unable to search Google Drive files.'), { statusCode: 502 });
+  }
+
+  const files = (response.data.files || []).filter((file) => {
+    return file.mimeType === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+  });
+
+  context.searches.set(cacheKey, files);
+  return files;
+}
+
+async function findMatchingDomainFolder(projectListFolderId, domainName, context = createDriveRequestContext()) {
+  const target = normalizeDomain(domainName);
+
+  if (!projectListFolderId || !target) {
+    return {
+      domainFolder: null,
+      folderPath: [],
+      normalizedDomain: target,
+    };
+  }
+
+  const firstLevelFolders = await listChildFolders(projectListFolderId, context);
+  const queue = firstLevelFolders.map((folder) => ({
+    folder,
+    path: [folder],
+  }));
+
+  while (queue.length) {
+    const { folder, path: folderPath } = queue.shift();
+
+    if (normalizeDomain(folder.name) === target) {
+      return {
+        domainFolder: folder,
+        folderPath,
+        normalizedDomain: target,
+      };
+    }
+
+    const childFolders = await listChildFolders(folder.id, context);
+    queue.push(...childFolders.map((childFolder) => ({
+      folder: childFolder,
+      path: [...folderPath, childFolder],
+    })));
+  }
+
+  return {
+    domainFolder: null,
+    folderPath: [],
+    normalizedDomain: target,
+  };
+}
+
+async function findFirstPdfForDomainFolder(domainFolder, context = createDriveRequestContext()) {
+  if (!domainFolder?.id) {
+    return null;
+  }
+
+  const queue = [domainFolder];
+
+  while (queue.length) {
+    const folder = queue.shift();
+    const pdfFiles = await listPdfFiles(folder.id, context);
+
+    if (pdfFiles.length) {
+      return pdfFiles[0];
+    }
+
+    const childFolders = await listChildFolders(folder.id, context);
+    queue.push(...childFolders);
+  }
+
+  return null;
+}
+
+async function findDomainMaterial({ domainName, context }) {
+  const requestContext = context || createDriveRequestContext();
+  const normalizedDomain = normalizeDomain(domainName);
+  const projectRoot = await findFolderByName(config.google.projectDriveRootFolderName);
+  const projectList = await findFolderByName('Project List', projectRoot?.id) ||
+    await findFolderByName('Project List');
+  const topLevelFolders = await listChildFolders(projectList?.id, requestContext);
+  const technicalFolder = topLevelFolders.find((folder) => normalizeDomain(folder.name) === 'technical') || null;
+  const match = await findMatchingDomainFolder(projectList?.id, domainName, requestContext);
+  const domainFolder = match.domainFolder;
+  const clusterFolder = match.folderPath.length > 1
+    ? match.folderPath[match.folderPath.length - 2]
+    : null;
+  const pdfFile = await findFirstPdfForDomainFolder(domainFolder, requestContext);
+  const material = fileResponse(pdfFile);
+  const domainMaterial = material ? {
+    fileId: material.id,
+    fileName: material.name,
+    openUrl: material.viewUrl,
+    downloadUrl: material.downloadUrl,
+  } : null;
+
+  console.log('Student Domain:', domainName);
+  console.log('Normalized Domain:', normalizedDomain);
+  console.log('Technical Folder Found:', technicalFolder);
+  console.log('Cluster Found:', clusterFolder);
+  console.log('Domain Folder Found:', domainFolder);
+  console.log('PDF Found:', pdfFile);
+  console.log('Generated Open URL:', domainMaterial?.openUrl || null);
+  console.log('Generated Download URL:', domainMaterial?.downloadUrl || null);
+  console.log('Final Domain Material:', domainMaterial);
+
+  logger.info('DRIVE DOMAIN MATERIAL SEARCH', {
+    domainName,
+    normalizedDomain: match.normalizedDomain,
+    projectRoot: projectRoot?.name || null,
+    projectList: projectList?.name || null,
+    technicalFolder: technicalFolder?.name || null,
+    clusterFolder: clusterFolder?.name || null,
+    matchedDomainFolder: domainFolder?.name || null,
+    selectedPdf: pdfFile?.name || null,
+  });
+
+  return material;
 }
 
 async function resolveDocumentFolder(type) {
@@ -473,6 +682,7 @@ async function getStudentDocuments({ name, internId, packageSelected, isComplete
 module.exports = {
   createDriveRequestContext,
   findCertificate,
+  findDomainMaterial,
   findFileByName,
   findLOR,
   findOfferLetter,

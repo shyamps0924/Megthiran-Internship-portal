@@ -973,6 +973,8 @@
         headers: getAuthHeaders(),
       });
 
+      console.log('Dashboard Response:', data);
+      console.log('Domain Material:', data.domainMaterial);
       populateDashboard(data);
     } catch (error) {
       sessionStorage.setItem(STORAGE_KEYS.loginError, error.message || 'Session expired. Please login again.');
@@ -1110,7 +1112,7 @@
     }
 
     renderDocuments(data.documents || {});
-    renderMaterials(data.materials || []);
+    renderDomainMaterial(data.domainMaterial);
     renderWebinars(data.webinars || [], data.announcements || []);
   }
 
@@ -1185,19 +1187,48 @@
       return;
     }
 
+    if (!materials.length) {
+      grid.innerHTML = [
+        '<article class="material-card">',
+        '  <span class="material-type">PDF</span>',
+        '  <h3>No domain material found for your selected domain.</h3>',
+        '  <p>Project material for your selected internship domain.</p>',
+        '</article>',
+      ].join('');
+      return;
+    }
+
     grid.innerHTML = materials.map(function (material) {
+      const openUrl = material.viewUrl || '#';
       return [
         '<article class="material-card">',
         '  <span class="material-type">' + escapeHtml(material.type || 'Resource') + '</span>',
         '  <h3>' + escapeHtml(material.title || 'Material') + '</h3>',
         '  <p>' + escapeHtml(material.description || '') + '</p>',
         '  <div class="document-actions">',
-        '    <a class="secondary-btn panel-btn" href="' + escapeAttribute(material.viewUrl || '#') + '" target="_blank" rel="noreferrer">Open</a>',
+        '    <a class="secondary-btn panel-btn" href="' + escapeAttribute(openUrl) + '" onclick="window.open(this.href, \'_blank\', \'noreferrer\'); return false;">Open</a>',
         '    <a class="primary-btn panel-btn" href="' + escapeAttribute(material.downloadUrl || '#') + '" target="_blank" rel="noreferrer">Download</a>',
         '  </div>',
         '</article>',
       ].join('');
     }).join('');
+  }
+
+  function renderDomainMaterial(domainMaterial) {
+    if (!domainMaterial) {
+      renderMaterials([]);
+      return;
+    }
+
+    renderMaterials([
+      {
+        type: 'PDF',
+        title: domainMaterial.fileName || 'Project Material',
+        description: 'Project material for your selected internship domain.',
+        viewUrl: domainMaterial.openUrl,
+        downloadUrl: domainMaterial.downloadUrl,
+      },
+    ]);
   }
 
   function renderWebinars(webinars, announcements) {

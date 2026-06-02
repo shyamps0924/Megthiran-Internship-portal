@@ -6,7 +6,7 @@ const {
   normalizeText,
   pickValue,
 } = require('./sheetsService');
-const { getStudentDocuments } = require('./driveService');
+const { findDomainMaterial, getStudentDocuments } = require('./driveService');
 const { normalizeDateForPassword } = require('../utils/dateUtils');
 const { extractDomain } = require('../utils/domainParser');
 const { buildInternshipSummary } = require('../utils/internship');
@@ -264,6 +264,7 @@ async function getDashboardData({ internId, rowNumber }) {
 
   const profile = toStudentProfile(student);
   let documents;
+  let domainMaterial = null;
 
   try {
     documents = await getStudentDocuments({
@@ -275,6 +276,28 @@ async function getDashboardData({ internId, rowNumber }) {
   } catch (error) {
     console.error('Google Drive Search Failed:', error.message);
     documents = unavailableDocuments();
+  }
+
+  try {
+    const materialFile = await findDomainMaterial({
+      domainName: profile.domain,
+    });
+
+    if (materialFile) {
+      domainMaterial = {
+        fileId: materialFile.id,
+        fileName: materialFile.name,
+        openUrl: materialFile.viewUrl,
+        downloadUrl: materialFile.downloadUrl,
+      };
+    }
+  } catch (error) {
+    console.error('Google Drive Domain Material Search Failed:', error.message);
+    logger.error('Domain material lookup failed.', {
+      internId: profile.internId,
+      domain: profile.domain,
+      message: error.message,
+    });
   }
 
   const offerLetter = documents.offerLetter?.file
@@ -309,43 +332,23 @@ async function getDashboardData({ internId, rowNumber }) {
       duration: profile.durationLabel,
     },
     documents,
-    materials: [
+    domainMaterial,
+    materials: domainMaterial ? [
       {
-        title: 'Domain Starter Handbook',
+        title: domainMaterial.fileName,
         type: 'PDF',
-        description: 'Core reading material for your selected internship track.',
-        viewUrl: '#',
-        downloadUrl: '#',
+        description: 'Project material for your selected internship domain.',
+        viewUrl: domainMaterial.openUrl,
+        downloadUrl: domainMaterial.downloadUrl,
       },
-      {
-        title: 'Task Submission Guide',
-        type: 'Document',
-        description: 'Project rules, proof requirements, and submission checklist.',
-        viewUrl: '#',
-        downloadUrl: '#',
-      },
-      {
-        title: 'Project Resource Pack',
-        type: 'Resources',
-        description: 'Templates, references, and curated learning resources.',
-        viewUrl: '#',
-        downloadUrl: '#',
-      },
-    ],
+    ] : [],
     webinars: [
       {
         title: 'Internship Orientation',
-        date: '01 Jun 2026',
+        date: '02 Jun 2026',
         time: '6:00 PM IST',
         link: 'https://meet.google.com/',
-        note: 'Program flow, expectations, and document access walkthrough.',
-      },
-      {
-        title: 'Project Kickoff Session',
-        date: '03 Jun 2026',
-        time: '7:00 PM IST',
-        link: 'https://meet.google.com/',
-        note: 'Task briefing, project standards, and mentor Q&A.',
+        note: 'Program flow, expectations, project access, and document walkthrough.',
       },
     ],
     announcements: [
