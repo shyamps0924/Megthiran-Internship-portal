@@ -106,6 +106,69 @@ function selectMatchingStudent(matches, { packageSelected, studentName }) {
   return selectMostCompleteStudent(matches);
 }
 
+function padDatePart(value) {
+  return String(value).padStart(2, '0');
+}
+
+function buildSheetDobDate(year, month, day) {
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
+}
+
+function formatParsedSheetDob(year, month, day) {
+  return [
+    padDatePart(day),
+    padDatePart(month),
+    year,
+  ].join('-');
+}
+
+function parseSheetDobForPassword(dobValue) {
+  if (!dobValue) {
+    return { formattedPassword: '', parsedDob: null };
+  }
+
+  if (dobValue instanceof Date && !Number.isNaN(dobValue.getTime())) {
+    const year = dobValue.getFullYear();
+    const month = dobValue.getMonth() + 1;
+    const day = dobValue.getDate();
+
+    return {
+      formattedPassword: formatParsedSheetDob(year, month, day),
+      parsedDob: `${year}-${padDatePart(month)}-${padDatePart(day)}`,
+    };
+  }
+
+  const text = String(dobValue).trim();
+  const mmddyyyy = text.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  if (!mmddyyyy) {
+    return { formattedPassword: '', parsedDob: null };
+  }
+
+  const month = Number(mmddyyyy[1]);
+  const day = Number(mmddyyyy[2]);
+  const year = Number(mmddyyyy[3]);
+  const date = buildSheetDobDate(year, month, day);
+
+  if (!date || Number.isNaN(date.getTime())) {
+    return { formattedPassword: '', parsedDob: null };
+  }
+
+  return {
+    formattedPassword: formatParsedSheetDob(year, month, day),
+    parsedDob: `${year}-${padDatePart(month)}-${padDatePart(day)}`,
+  };
+}
+
 function unavailableDocuments() {
   return {
     offerLetter: {
@@ -148,7 +211,17 @@ async function authenticateStudent(internId, password, options = {}) {
 
   const normalizedPassword = normalizeDateForPassword(password);
   const dobMatches = internIdMatches.filter((student) => {
-    return normalizeDateForPassword(pickValue(student, COLUMN_LABELS.dob)) === normalizedPassword;
+    const rawDob = pickValue(student, COLUMN_LABELS.dob);
+    const { formattedPassword, parsedDob } = parseSheetDobForPassword(rawDob);
+
+    logger.info('DOB LOGIN VALIDATION DEBUG', {
+      internId,
+      rawDob,
+      parsedDob,
+      generatedPassword: formattedPassword,
+    });
+
+    return formattedPassword === normalizedPassword;
   });
 
   logger.info('SHEET MATCHING', {
