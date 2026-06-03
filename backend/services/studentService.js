@@ -13,7 +13,7 @@ const { extractDomain } = require('../utils/domainParser');
 const { buildInternshipSummary } = require('../utils/internship');
 const logger = require('../utils/logger');
 
-const DOMAIN_MATERIALS_URL = 'https://drive.google.com/drive/folders/1nMhYhPZLd9_a0MM6VTDlUd9Tk1RdpqQs?usp=sharing';
+const DOMAIN_MATERIALS_URL = 'https://drive.google.com/drive/folders/1iSgmiRUIoGPMVP_WGGnGSYnE0x50QrIY?usp=sharing';
 
 const COLUMN_LABELS = {
   internId: ['Intern ID', 'Intern_ID', 'intern_id'],
