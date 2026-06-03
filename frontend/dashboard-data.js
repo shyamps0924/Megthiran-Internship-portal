@@ -1,5 +1,5 @@
 (function () {
-  const domainMaterialsUrl = 'https://drive.google.com/drive/folders/1nMhYhPZLd9_a0MM6VTDlUd9Tk1RdpqQs';
+  const domainMaterialsUrl = 'https://drive.google.com/drive/folders/1nMhYhPZLd9_a0MM6VTDlUd9Tk1RdpqQs?usp=sharing';
   const sharedMaterials = [
     {
       title: 'Domain Materials',

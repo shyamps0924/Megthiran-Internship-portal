@@ -13,6 +13,8 @@ const { extractDomain } = require('../utils/domainParser');
 const { buildInternshipSummary } = require('../utils/internship');
 const logger = require('../utils/logger');
 
+const DOMAIN_MATERIALS_URL = 'https://drive.google.com/drive/folders/1nMhYhPZLd9_a0MM6VTDlUd9Tk1RdpqQs?usp=sharing';
+
 const COLUMN_LABELS = {
   internId: ['Intern ID', 'Intern_ID', 'intern_id'],
   name: ['Student Name', 'Full Name', 'Name'],
@@ -265,9 +267,7 @@ async function getDashboardData({ internId, rowNumber }) {
 
   const profile = toStudentProfile(student);
   let documents;
-  const domainMaterialsUrl = config.google.projectDriveRootFolderId
-    ? `https://drive.google.com/drive/folders/${config.google.projectDriveRootFolderId}`
-    : '';
+  const domainMaterialsUrl = DOMAIN_MATERIALS_URL;
   const domainMaterial = domainMaterialsUrl
     ? {
       title: 'Domain Materials',
@@ -333,7 +333,7 @@ async function getDashboardData({ internId, rowNumber }) {
         title: 'Internship Orientation',
         date: '02 Jun 2026',
         time: '6:00 PM IST',
-        link: 'https://meet.google.com/tpb-zqvy-ajv',
+        status: 'Completed',
         note: 'Program flow, expectations, project access, and document walkthrough.',
       },
     ],

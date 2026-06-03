@@ -1,10 +1,19 @@
 services:
   - type: web
     name: megthiran-internship-portal
-    env: python
+    runtime: node
 
-    buildCommand: |
-      pip install -r requirements.txt
-      python manage.py migrate
+    buildCommand: npm ci
 
-    startCommand: gunicorn config.wsgi
+    startCommand: npm start
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: UPLOADS_DIR
+        value: /opt/render/project/src/backend/uploads
+
+    disk:
+      name: megthiran-uploads
+      mountPath: /opt/render/project/src/backend/uploads
+      sizeGB: 1

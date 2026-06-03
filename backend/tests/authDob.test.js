@@ -12,6 +12,24 @@ const students = [
   { 'Intern ID': 'M26IP103', 'Date of Birth': '6/6/2007', 'Student Name': 'June Student', __rowNumber: 4 },
   { 'Intern ID': 'M26IP104', 'Date of Birth': '11/12/2004', 'Student Name': 'November Student', __rowNumber: 5 },
   { 'Intern ID': 'M26IP105', 'Date of Birth': '12/11/2004', 'Student Name': 'December Student', __rowNumber: 6 },
+  {
+    'Intern ID': 'M26IP201',
+    'Date of Birth': '1/1/2005',
+    'Student Name': 'Shared Student',
+    Email: 'shared@example.com',
+    'Whatsapp Number': '9999999999',
+    'Software/IT - Domain': 'Web Development',
+    __rowNumber: 7,
+  },
+  {
+    'Intern ID': 'M26IP202',
+    'Date of Birth': '1/1/2005',
+    'Student Name': 'Shared Student',
+    Email: 'shared@example.com',
+    'Whatsapp Number': '9999999999',
+    'Design & UI - Domain': 'UI/UX',
+    __rowNumber: 8,
+  },
 ];
 
 function normalizeHeader(value) {
@@ -41,7 +59,9 @@ require.cache[sheetsServicePath] = {
   loaded: true,
   exports: {
     countCompleteFields: (student) => Object.keys(student).length,
-    findStudentByRowNumber: () => null,
+    findStudentByRowNumber: (rows, rowNumber, internId) => rows.find((student) => {
+      return student.__rowNumber === rowNumber && pickValue(student, ['Intern ID', 'Intern_ID', 'intern_id']) === internId;
+    }) || null,
     findStudentsByInternId: (rows, internId) => rows.filter((student) => {
       return pickValue(student, ['Intern ID', 'Intern_ID', 'intern_id']) === internId;
     }),
@@ -61,7 +81,7 @@ require.cache[driveServicePath] = {
 };
 
 delete require.cache[studentServicePath];
-const { authenticateStudent } = require(studentServicePath);
+const { authenticateStudent, getDashboardData } = require(studentServicePath);
 
 test('authenticates Google Sheets DOB values as MM/DD/YYYY', async () => {
   const cases = [
@@ -83,4 +103,24 @@ test('rejects day-first password for ambiguous Google Sheets DOB', async () => {
     authenticateStudent('M26IP101', '08-07-2006'),
     /Student record not found/
   );
+});
+
+test('keeps same-user registrations separate by Intern ID', async () => {
+  const webProfile = await authenticateStudent('M26IP201', '01-01-2005');
+  const uxProfile = await authenticateStudent('M26IP202', '01-01-2005');
+
+  assert.equal(webProfile.internId, 'M26IP201');
+  assert.equal(webProfile.domain, 'Web Development');
+  assert.equal(uxProfile.internId, 'M26IP202');
+  assert.equal(uxProfile.domain, 'UI/UX');
+});
+
+test('dashboard loads the row tied to the logged-in Intern ID', async () => {
+  const dashboard = await getDashboardData({
+    internId: 'M26IP202',
+    rowNumber: 8,
+  });
+
+  assert.equal(dashboard.student.internId, 'M26IP202');
+  assert.equal(dashboard.student.domain, 'UI/UX');
 });

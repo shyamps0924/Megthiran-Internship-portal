@@ -1200,13 +1200,14 @@
 
     grid.innerHTML = materials.map(function (material) {
       const openUrl = material.viewUrl || '#';
+      const buttonText = material.buttonText || 'Open Domain Materials';
       return [
         '<article class="material-card">',
         '  <span class="material-type">' + escapeHtml(material.type || 'Resource') + '</span>',
         '  <h3>' + escapeHtml(material.title || 'Material') + '</h3>',
         '  <p>' + escapeHtml(material.description || '') + '</p>',
         '  <div class="document-actions">',
-        '    <a class="primary-btn panel-btn" href="' + escapeAttribute(openUrl) + '" onclick="window.open(this.href, \'_blank\', \'noreferrer\'); return false;">Open Domain Materials</a>',
+        '    <a class="primary-btn panel-btn" href="' + escapeAttribute(openUrl) + '" onclick="window.open(this.href, \'_blank\', \'noreferrer\'); return false;">' + escapeHtml(buttonText) + '</a>',
         '  </div>',
         '</article>',
       ].join('');
@@ -1225,6 +1226,14 @@
         title: domainMaterial.title || 'Domain Materials',
         description: 'Open the shared Google Drive folder for all domain materials.',
         viewUrl: domainMaterial.openUrl,
+        buttonText: 'Open Domain Materials',
+      },
+      {
+        type: 'Drive Folder',
+        title: 'Internship Tasks',
+        description: 'Open the official internship tasks, project requirements, and submission guidelines.',
+        viewUrl: 'https://drive.google.com/drive/folders/1S7SYUXFG3iDl95TaOBL-ies5arwqjMc4?usp=sharing',
+        buttonText: 'Open Internship Tasks',
       },
     ]);
   }
@@ -1242,7 +1251,7 @@
           '    <p>' + escapeHtml([webinar.date, webinar.time].filter(Boolean).join(' - ')) + '</p>',
           '    <p>' + escapeHtml(webinar.note || '') + '</p>',
           '  </div>',
-          '  <a class="secondary-btn panel-btn" href="' + escapeAttribute(webinar.link || '#') + '" target="_blank" rel="noreferrer">Join</a>',
+          '  <span class="secondary-btn panel-btn">' + escapeHtml(webinar.status || 'Completed') + '</span>',
           '</article>',
         ].join('');
       }).join('');

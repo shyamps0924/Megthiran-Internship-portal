@@ -19,6 +19,9 @@ const frontendDir = path.resolve(
   '..',
   'frontend'
 );
+const uploadsDir = path.resolve(
+  process.env.UPLOADS_DIR || path.join(__dirname, 'uploads')
+);
 
 const devAllowedOrigins = new Set([
   `http://localhost:${config.port}`,
@@ -101,6 +104,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 
 app.use('/api/student', studentRoutes);
+
+app.use('/uploads', express.static(uploadsDir));
 
 app.use(express.static(frontendDir));
 
