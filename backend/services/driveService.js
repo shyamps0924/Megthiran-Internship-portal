@@ -57,6 +57,12 @@ function normalizeMatchValue(value) {
     .trim();
 }
 
+function normalizeIdentifier(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
 function normalizeDomain(name) {
   return String(name || '')
     .toLowerCase()
@@ -546,6 +552,123 @@ function selectBestDocumentFile(files, studentName, packageSelected, documentLab
   return matches[0] || null;
 }
 
+function isOfferLetterFile(file) {
+  return normalizeMatchValue(file?.name).includes('offer letter');
+}
+
+function fileContainsIdentifier(file, identifier) {
+  const normalizedIdentifier = normalizeIdentifier(identifier);
+
+  if (!normalizedIdentifier) {
+    return false;
+  }
+
+  return normalizeIdentifier(file?.name).includes(normalizedIdentifier);
+}
+
+function fileContainsMatchValue(file, value) {
+  const normalizedValue = normalizeMatchValue(value);
+
+  if (!normalizedValue) {
+    return false;
+  }
+
+  return normalizeMatchValue(file?.name).includes(normalizedValue) ||
+    normalizeIdentifier(file?.name).includes(normalizeIdentifier(value));
+}
+
+function fileMatchesLegacyOfferLetterName(file, studentName) {
+  const expectedNames = buildExpectedFileNames(studentName, 'Offer Letter');
+
+  return expectedNames.some((expected) => normalizeDriveName(file.name) === normalizeDriveName(expected));
+}
+
+function selectOfferLetterFile(files, { studentName, internId, domainName, domainId, hasDuplicateName }) {
+  const offerLetterFiles = files.filter(isOfferLetterFile);
+
+  const internMatches = offerLetterFiles.filter((file) => fileContainsIdentifier(file, internId));
+  if (internMatches.length) {
+    return internMatches.find((file) => fileContainsMatchValue(file, studentName)) || internMatches[0];
+  }
+
+  const domainIdMatches = offerLetterFiles.filter((file) => (
+    fileContainsMatchValue(file, studentName) &&
+    fileContainsIdentifier(file, domainId)
+  ));
+  if (domainIdMatches.length) {
+    return domainIdMatches[0];
+  }
+
+  const domainAndNameMatches = offerLetterFiles.filter((file) => (
+    fileContainsMatchValue(file, studentName) &&
+    fileContainsMatchValue(file, domainName)
+  ));
+  if (domainAndNameMatches.length) {
+    return domainAndNameMatches[0];
+  }
+
+  if (hasDuplicateName) {
+    return null;
+  }
+
+  const legacyExactMatches = offerLetterFiles.filter((file) => fileMatchesLegacyOfferLetterName(file, studentName));
+  if (legacyExactMatches.length === 1) {
+    return legacyExactMatches[0];
+  }
+
+  const nameMatches = offerLetterFiles.filter((file) => fileContainsMatchValue(file, studentName));
+  return nameMatches.length === 1 ? nameMatches[0] : null;
+}
+
+async function searchOfferLetterFilesByFullText({ folderId, searchText, context }) {
+  if (!folderId || !searchText) {
+    return [];
+  }
+
+  const query = [
+    `'${escapeDriveQueryValue(folderId)}' in parents`,
+    `fullText contains '${escapeDriveQueryValue(searchText)}'`,
+    'trashed=false',
+  ].join(' and ');
+  const cacheKey = JSON.stringify({
+    type: 'offer',
+    fullText: normalizeIdentifier(searchText),
+  });
+
+  console.log('Offer Letter Search Query:', query);
+
+  if (context.searches.has(cacheKey)) {
+    return context.searches.get(cacheKey);
+  }
+
+  let response;
+
+  try {
+    const drive = await getDriveClient();
+    response = await drive.files.list({
+      q: query,
+      fields: 'files(id,name,webViewLink)',
+      pageSize: 50,
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true,
+    });
+  } catch (error) {
+    logger.error('Google Drive offer letter full text search failed.', {
+      folderId,
+      searchText,
+      status: error.code || error.response?.status,
+      message: error.message,
+    });
+    return [];
+  }
+
+  const files = response.data.files || [];
+  console.log('Offer Letter Full Text Files Found:', files.length);
+  console.log('Offer Letter Full Text File Names:', files.map((file) => file.name));
+  context.searches.set(cacheKey, files);
+  return files;
+}
+
 async function searchDocumentFiles({ folderId, studentName, packageSelected, documentLabel, context }) {
   if (!folderId || !studentName) {
     return [];
@@ -616,7 +739,14 @@ async function findDocumentByStudentAndPackage({ type, studentName, packageSelec
   return selected;
 }
 
-async function findOfferLetterFileByStudentName(studentName, context = createDriveRequestContext()) {
+async function findOfferLetterFileByStudentRegistration({
+  studentName,
+  internId,
+  domainName,
+  domainId,
+  hasDuplicateName,
+  context = createDriveRequestContext(),
+}) {
   const normalizedStudentName = normalizeText(studentName);
   const offerLettersFolderId = config.google.offerLettersFolderId ||
     '1WpP8HkFphTtFRhtUUvvxzStdZcHpGDKV';
@@ -627,6 +757,9 @@ async function findOfferLetterFileByStudentName(studentName, context = createDri
 
   console.log('Student Name:', studentName);
   console.log('Normalized Student:', normalizedStudentName);
+  console.log('Current Intern ID:', internId || '');
+  console.log('Current Domain:', domainName || '');
+  console.log('Current Domain ID:', domainId || '');
   console.log('Folder ID:', offerLettersFolderId);
 
   if (!normalizedStudentName) {
@@ -634,6 +767,25 @@ async function findOfferLetterFileByStudentName(studentName, context = createDri
     console.log('Files Found:', 0);
     console.log('Matched Offer Letter:', null);
     return null;
+  }
+
+  const internSearchFiles = await searchOfferLetterFilesByFullText({
+    folderId: offerLettersFolderId,
+    searchText: internId,
+    context,
+  });
+  const internSearchOfferLetterFiles = internSearchFiles.filter(isOfferLetterFile);
+  const internSearchMatch = selectOfferLetterFile(internSearchFiles, {
+    studentName,
+    internId,
+    domainName,
+    domainId,
+    hasDuplicateName,
+  }) || (internSearchOfferLetterFiles.length === 1 ? internSearchOfferLetterFiles[0] : null);
+
+  if (internSearchMatch) {
+    console.log('Matched Offer Letter:', internSearchMatch);
+    return internSearchMatch;
   }
 
   let files;
@@ -645,12 +797,15 @@ async function findOfferLetterFileByStudentName(studentName, context = createDri
 
     try {
       const drive = await getDriveClient();
+      const query = [
+        `'${escapeDriveQueryValue(offerLettersFolderId)}' in parents`,
+        'trashed=false',
+      ].join(' and ');
+
+      console.log('Offer Letter Search Query:', query);
       response = await drive.files.list({
-        q: [
-          `'${escapeDriveQueryValue(offerLettersFolderId)}' in parents`,
-          'trashed=false',
-        ].join(' and '),
-        fields: 'files(id,name)',
+        q: query,
+        fields: 'files(id,name,webViewLink)',
         pageSize: 1000,
         supportsAllDrives: true,
         includeItemsFromAllDrives: true,
@@ -677,12 +832,13 @@ async function findOfferLetterFileByStudentName(studentName, context = createDri
     context.searches.set(cacheKey, files);
   }
 
-  const matchedFile = files.find((file) => {
-    const normalizedFileName = normalizeText(file.name);
-
-    return normalizedFileName.includes(normalizedStudentName) &&
-      normalizedFileName.includes('offer letter');
-  }) || null;
+  const matchedFile = selectOfferLetterFile(files, {
+    studentName,
+    internId,
+    domainName,
+    domainId,
+    hasDuplicateName,
+  });
 
   console.log('All Drive Files:', files);
   console.log('Files Found:', files.length);
@@ -691,8 +847,22 @@ async function findOfferLetterFileByStudentName(studentName, context = createDri
   return matchedFile;
 }
 
-async function findOfferLetter({ studentName, packageSelected, context }) {
-  const file = await findOfferLetterFileByStudentName(studentName, context);
+async function findOfferLetterFileByStudentName(studentName, context = createDriveRequestContext()) {
+  return findOfferLetterFileByStudentRegistration({
+    studentName,
+    context,
+  });
+}
+
+async function findOfferLetter({ studentName, internId, domainName, domainId, hasDuplicateName, packageSelected, context }) {
+  const file = await findOfferLetterFileByStudentRegistration({
+    studentName,
+    internId,
+    domainName,
+    domainId,
+    hasDuplicateName,
+    context,
+  });
 
   return documentUrlResponse(file);
 }
@@ -721,11 +891,18 @@ async function findLOR({ studentName, packageSelected, context }) {
   return documentUrlResponse(file);
 }
 
-async function getStudentDocuments({ name, internId, packageSelected, isCompleted }) {
+async function getStudentDocuments({ name, internId, domainName, domainId, hasDuplicateName, packageSelected, isCompleted }) {
   const context = createDriveRequestContext();
-  logger.info('Resolving student Drive documents.', { internId, name, packageSelected, isCompleted });
+  logger.info('Resolving student Drive documents.', { internId, name, domainName, domainId, hasDuplicateName, packageSelected, isCompleted });
 
-  const offerLetter = await findOfferLetterFileByStudentName(name, context);
+  const offerLetter = await findOfferLetterFileByStudentRegistration({
+    studentName: name,
+    internId,
+    domainName,
+    domainId,
+    hasDuplicateName,
+    context,
+  });
 
   const documents = {
     offerLetter: {

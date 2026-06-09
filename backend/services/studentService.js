@@ -266,6 +266,9 @@ async function getDashboardData({ internId, rowNumber }) {
   }
 
   const profile = toStudentProfile(student);
+  const hasDuplicateName = students.filter((entry) => {
+    return normalizeText(pickValue(entry, COLUMN_LABELS.name)) === normalizeText(profile.name);
+  }).length > 1;
   let documents;
   const domainMaterialsUrl = DOMAIN_MATERIALS_URL;
   const domainMaterial = domainMaterialsUrl
@@ -279,6 +282,9 @@ async function getDashboardData({ internId, rowNumber }) {
     documents = await getStudentDocuments({
       name: profile.name,
       internId: profile.internId,
+      domainName: profile.domain,
+      domainId: profile.domainId,
+      hasDuplicateName,
       packageSelected: profile.internshipPackage,
       isCompleted: profile.status === 'Completed',
     });

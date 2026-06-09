@@ -1015,7 +1015,7 @@ p {
 }
 
 .pricing-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-auto-rows: 1fr;
   align-items: stretch;
 }
@@ -1487,28 +1487,41 @@ select:focus {
   margin-top: 30px;
 }
 
+.registration-open-inline,
 .registration-closed-inline {
   display: grid;
   gap: 0.55rem;
   max-width: 34rem;
 }
 
+.registration-open-inline p,
 .registration-closed-inline p,
+.registration-open-actions + p,
 .registration-closed-actions + p {
   margin: 0;
 }
 
+.registration-open-inline p,
 .registration-closed-inline p {
   color: var(--muted);
   line-height: 1.6;
 }
 
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.registration-status-badge,
 .registration-closed-button {
   cursor: default;
   text-align: center;
   pointer-events: none;
 }
 
+.registration-open-actions,
 .registration-closed-actions {
   margin-top: 1.25rem;
 }
@@ -3940,6 +3953,13 @@ body.site-home .btn-secondary {
   }
 }
 
+@media (max-width: 767px) {
+  .hero-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 @media (max-width: 520px) {
   .hero {
     padding-top: 18px;
@@ -4019,10 +4039,6 @@ body.site-home .hero-actions .btn {
 
 .package-premium-page {
   background: linear-gradient(135deg, #fbfbff 0%, #f0edff 46%, #eaf6ff 100%);
-}
-
-.package-elite-page {
-  background: linear-gradient(135deg, #f8fbff 0%, #e7f9ff 45%, #eef4ff 100%);
 }
 
 .package-page main > .section {
