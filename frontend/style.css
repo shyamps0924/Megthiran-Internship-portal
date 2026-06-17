@@ -4029,14 +4029,6 @@ body.site-home .hero-actions .btn {
     linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
 }
 
-.package-basic-page {
-  background: linear-gradient(135deg, #f8fbff 0%, #eaf3ff 52%, #f7fbff 100%);
-}
-
-.package-standard-page {
-  background: linear-gradient(135deg, #f8fbff 0%, #edf7ff 48%, #eafbf8 100%);
-}
-
 .package-premium-page {
   background: linear-gradient(135deg, #fbfbff 0%, #f0edff 46%, #eaf6ff 100%);
 }
@@ -4817,5 +4809,381 @@ body[data-page="domains"] .domain-pill {
 
   .domain-section-card {
     padding: 18px 14px;
+  }
+}
+
+/* Premium-only package and responsive stabilization pass. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.container,
+.section > .container,
+.package-page .container,
+.domains-page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+}
+
+.site-header .container {
+  max-width: 1200px;
+}
+
+.nav-wrap {
+  min-width: 0;
+}
+
+.nav-links {
+  min-width: 0;
+}
+
+.hero-grid,
+.card-grid,
+.benefit-grid,
+.why-grid,
+.contact-grid,
+.process-steps,
+.footer-grid,
+.package-layout {
+  min-width: 0;
+}
+
+body.site-home .hero-content h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+body.site-home .section-text,
+.registration-open-inline p,
+.package-subtitle {
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+}
+
+.hero-laptop-image,
+.hero-image,
+.brand-logo {
+  max-width: 100%;
+  height: auto;
+}
+
+.hero-laptop-scene {
+  width: min(100%, 520px);
+}
+
+#packages .pricing-grid,
+#packages .pricing-grid.premium-only {
+  grid-template-columns: minmax(0, min(100%, 440px));
+  justify-content: center;
+  justify-items: stretch;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.site-home #packages .pricing-card,
+#packages .pricing-card {
+  width: 100%;
+  max-width: 440px;
+  min-height: auto;
+}
+
+#packages .pricing-card-header {
+  min-height: 0;
+}
+
+.package-detail-list {
+  overflow-wrap: anywhere;
+}
+
+.package-page .package-detail-card {
+  width: 100%;
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.package-page .package-hero h1,
+.package-head h1,
+section h2 {
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.package-page .package-hero h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.12;
+}
+
+.package-layout {
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+}
+
+.content-card,
+.package-block,
+.package-features-box,
+.quick-summary,
+.final-cta {
+  min-width: 0;
+}
+
+.btn,
+.hero-buttons .btn,
+.hero-cta-row .btn {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+@media (min-width: 1440px) {
+  .container,
+  .section > .container,
+  .package-page .container,
+  .domains-page-container {
+    max-width: 1200px;
+  }
+
+  body.site-home .hero-content h1 {
+    font-size: 48px;
+  }
+
+  body.site-home .section-text {
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  body.site-home .hero-grid {
+    grid-template-columns: minmax(0, 1.12fr) minmax(360px, 0.88fr);
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .nav-links {
+    gap: clamp(0.7rem, 1.2vw, 1.2rem);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  body.site-home .hero-grid {
+    grid-template-columns: 1fr;
+    min-height: auto !important;
+    gap: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  body.site-home .hero-content,
+  body.site-home .hero-content h1,
+  body.site-home .hero-content > .section-text,
+  body.site-home .registration-open-inline {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body.site-home .hero-content h1 {
+    font-size: 40px;
+  }
+
+  body.site-home .section-text {
+    font-size: 20px;
+  }
+
+  .hero-cta-row,
+  body.site-home .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-visual {
+    width: min(100%, 620px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .package-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-offset: 82px;
+  }
+
+  .container,
+  .section > .container,
+  .package-page .container,
+  .domains-page-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .nav-wrap {
+    min-height: 82px;
+    gap: 0.75rem;
+  }
+
+  .brand {
+    min-width: 0;
+  }
+
+  .brand-logo {
+    width: clamp(116px, 42vw, 150px);
+    height: auto;
+    transform: none;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: none;
+    align-items: center;
+    text-align: center;
+  }
+
+  .nav-links a {
+    text-align: center;
+  }
+
+  body.site-home .hero {
+    min-height: auto !important;
+    margin-top: 0;
+    padding-top: 32px;
+    padding-bottom: 40px;
+  }
+
+  body.site-home .hero-grid {
+    grid-template-columns: 1fr;
+    min-height: auto !important;
+    gap: 1.5rem;
+  }
+
+  body.site-home .hero-content,
+  body.site-home .hero-content h1,
+  body.site-home .hero-content > .section-text,
+  body.site-home .registration-open-inline {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body.site-home .hero-content h1 {
+    font-size: 32px;
+  }
+
+  body.site-home .section-text,
+  .registration-open-inline p {
+    font-size: 18px;
+  }
+
+  .hero-cta-row,
+  body.site-home .hero-actions,
+  .hero-buttons {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero-cta-row .btn,
+  .hero-buttons .btn {
+    width: min(100%, 320px);
+  }
+
+  .hero-visual {
+    width: 100%;
+    min-height: auto;
+    aspect-ratio: 16 / 11;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-laptop-scene {
+    width: 100%;
+  }
+
+  .section {
+    padding-top: 44px;
+    padding-bottom: 44px;
+  }
+
+  .card-grid,
+  .benefit-grid,
+  .why-grid,
+  .contact-grid,
+  .process-steps,
+  .footer-grid,
+  .package-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .why-card,
+  .benefit-card,
+  .process-step,
+  .contact-card,
+  .pricing-card {
+    width: 100%;
+  }
+
+  .package-page .package-detail-card {
+    padding: 18px 14px;
+  }
+
+  .package-page .package-hero {
+    padding: 22px 4px 10px;
+  }
+
+  .package-page .package-hero h1,
+  .package-head h1 {
+    font-size: 32px;
+  }
+
+  .content-card {
+    padding: 20px 16px;
+  }
+
+  .package-objectives,
+  .package-features {
+    padding-left: 1.25rem;
+  }
+
+  .final-cta {
+    padding: 24px 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  body.site-home .hero-content h1,
+  .package-page .package-hero h1,
+  .package-head h1 {
+    font-size: 30px;
+  }
+
+  .title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-cta-row .btn,
+  .hero-buttons .btn {
+    width: 100%;
   }
 }

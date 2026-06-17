@@ -76,6 +76,39 @@
       border: 1px solid rgba(16, 42, 67, 0.1);
     }
 
+    .pricing-grid.premium-only {
+      grid-template-columns: minmax(0, 420px);
+      justify-content: center;
+      justify-items: stretch;
+    }
+
+    .package-detail-list {
+      display: grid;
+      gap: 0.5rem;
+      margin: 1rem 0 0;
+      padding: 0;
+      list-style: none;
+      color: #4a6176;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .package-detail-list li {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .package-detail-list li::before {
+      content: "";
+      width: 0.45rem;
+      height: 0.45rem;
+      margin-top: 0.48rem;
+      border-radius: 999px;
+      background: #00a8b5;
+      flex: 0 0 auto;
+    }
+
     .pricing-card.pricing-featured {
       border-color: rgba(0, 168, 181, 0.45);
       box-shadow: 0 18px 34px rgba(16, 42, 67, 0.14);
@@ -179,6 +212,10 @@
     @media (max-width: 1060px) {
       .pricing-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pricing-grid.premium-only {
+        grid-template-columns: minmax(0, 420px);
       }
     }
 
@@ -395,55 +432,30 @@
       <div class="container">
         <div>
           <h2>Packages</h2>
-          <p class="section-text">Choose the internship package that fits your learning pace, project depth, and mentorship needs.</p>
+          <p class="section-text">One focused internship package with structured projects, tasks, and webinars.</p>
         </div>
 
-        <div class="card-grid pricing-grid">
-          <article class="pricing-card">
+        <div class="card-grid pricing-grid premium-only">
+          <article class="pricing-card pricing-featured">
             <div class="pricing-card-header">
               <div class="pricing-card-heading">
                 <div class="title-row">
-                  <h3>Basic</h3>
-                  <p class="plan-price">&#8377;49</p>
-                </div>
-                <div class="plan-description">
-                  <p>Good for beginners</p>
-                </div>
-              </div>
-            </div>
-            <a class="btn btn-primary" href="./package-basic.html">Read More</a>
-          </article>
-
-          <article class="pricing-card">
-            <div class="pricing-card-header">
-              <div class="pricing-card-heading">
-                <div class="title-row">
-                  <h3>Standard</h3>
-                  <p class="plan-price">&#8377;79</p>
-                </div>
-                <div class="plan-description">
-                  <p>Step up from basics</p>
-                </div>
-              </div>
-            </div>
-            <a class="btn btn-primary" href="./package-standard.html">Read More</a>
-          </article>
-
-          <article class="pricing-card">
-            <div class="pricing-card-header">
-              <div class="pricing-card-heading">
-                <div class="title-row">
-                  <h3>Premium</h3>
+                  <h3>Premium Package</h3>
                   <p class="plan-price">&#8377;99</p>
                 </div>
                 <div class="plan-description">
-                  <p>More depth and practice</p>
+                  <p>30 Days</p>
                 </div>
+                <ul class="package-detail-list" aria-label="Premium package details">
+                  <li>Internship Period: 15 June 2026 &ndash; 16 July 2026</li>
+                  <li>Complete 2 Projects</li>
+                  <li>Complete 3 Tasks</li>
+                  <li>3 Webinars</li>
+                </ul>
               </div>
             </div>
             <a class="btn btn-primary" href="./package-premium.html">Read More</a>
           </article>
-
         </div>
       </div>
     </section>
