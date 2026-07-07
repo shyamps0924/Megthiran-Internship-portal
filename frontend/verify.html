@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificate Verification | MegThiran Internship Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="page-verify" data-page="verify">
+  <main class="verify-shell" data-page-shell>
+    <section class="verify-brand">
+      <a href="index.html" aria-label="MegThiran home">
+        <img src="./assets/megthiran.png" alt="MegThiran logo" class="verify-logo" />
+      </a>
+      <p class="eyebrow">Public Certificate Verification</p>
+      <h1>Megthiran Internship Program</h1>
+      <p>
+        Verify internship completion certificates issued by Megthiran Internship Program using the Intern ID printed on the certificate.
+      </p>
+    </section>
+
+    <section id="verifyCard" class="verify-card" aria-live="polite">
+      <div class="verify-status verify-status-loading">
+        <span class="verify-spinner" aria-hidden="true"></span>
+        <div>
+          <p class="verify-kicker">Checking certificate</p>
+          <h2>Loading verification details...</h2>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="verify-footer">
+    <p>&copy; 2026 MEGTHIRAN. All rights reserved.</p>
+  </footer>
+
+  <script src="certificate-verification-data.js"></script>
+  <script src="verify.js"></script>
+</body>
+</html>

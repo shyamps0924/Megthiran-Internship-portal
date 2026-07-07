@@ -115,6 +115,12 @@ app.get('/', (req, res) => {
   );
 });
 
+app.get('/verify', (req, res) => {
+  res.sendFile(
+    path.join(frontendDir, 'verify.html')
+  );
+});
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
