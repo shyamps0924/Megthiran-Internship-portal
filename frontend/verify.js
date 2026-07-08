@@ -79,6 +79,10 @@
       const records = Array.isArray(window.MEGTHIRAN_CERTIFICATE_RECORDS)
         ? window.MEGTHIRAN_CERTIFICATE_RECORDS
         : [];
+      console.log('[certificate-verification] Total records loaded:', records.length);
+      console.log('[certificate-verification] First Intern ID:', String(records[0]?.internId || '').trim() || '(none)');
+      console.log('[certificate-verification] Last Intern ID:', String(records[records.length - 1]?.internId || '').trim() || '(none)');
+
       const certificate = records.find(function (record) {
         return String(record.internId || '').trim().toUpperCase() === internId;
       });

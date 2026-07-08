@@ -135,5 +135,14 @@ window.MEGTHIRAN_CERTIFICATE_RECORDS = [
     "package": "Premium",
     "completedStatus": "Completed",
     "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Joshua Samuel D",
+    "internId": "M26IP289",
+    "domainName": "Cloud Computing Fundamentals",
+    "domainId": "26T-C-CC",
+    "package": "Premium",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
   }
 ];

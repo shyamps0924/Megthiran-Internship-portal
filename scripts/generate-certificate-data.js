@@ -67,6 +67,10 @@ function cellText(value) {
   return String(value || '').trim();
 }
 
+function rowHasValue(row) {
+  return row.some((cell) => cellText(cell));
+}
+
 function loadCertificateRecords(workbookPath) {
   const workbook = XLSX.readFile(workbookPath, {
     cellDates: false,
@@ -74,10 +78,18 @@ function loadCertificateRecords(workbookPath) {
   });
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
+  const fullRange = worksheet['!ref'];
+
+  if (!fullRange) {
+    throw new Error('Certificate verification worksheet is empty.');
+  }
+
   const rows = XLSX.utils.sheet_to_json(worksheet, {
     header: 1,
     defval: '',
-    blankrows: false,
+    blankrows: true,
+    range: fullRange,
+    raw: false,
   });
   const headerRowIndex = findHeaderRow(rows);
 
@@ -86,8 +98,12 @@ function loadCertificateRecords(workbookPath) {
   }
 
   const columnIndex = buildColumnIndex(rows[headerRowIndex]);
+  const lastDataRowIndex = rows.reduce((lastIndex, row, index) => {
+    return index > headerRowIndex && rowHasValue(row) ? index : lastIndex;
+  }, headerRowIndex);
 
-  return rows.slice(headerRowIndex + 1)
+  const records = rows.slice(headerRowIndex + 1, lastDataRowIndex + 1)
+    .filter(rowHasValue)
     .map((row) => ({
       studentName: cellText(row[columnIndex.studentName]),
       internId: cellText(row[columnIndex.internId]).toUpperCase(),
@@ -96,8 +112,13 @@ function loadCertificateRecords(workbookPath) {
       package: cellText(row[columnIndex.package]),
       completedStatus: cellText(row[columnIndex.completedStatus]),
       issuedBy: 'Megthiran Internship Program',
-    }))
-    .filter((record) => record.internId);
+    }));
+
+  console.log(`[certificate-data] Total records loaded: ${records.length}`);
+  console.log(`[certificate-data] First Intern ID: ${records[0]?.internId || '(none)'}`);
+  console.log(`[certificate-data] Last Intern ID: ${records[records.length - 1]?.internId || '(none)'}`);
+
+  return records;
 }
 
 function writeCertificateData(records) {
