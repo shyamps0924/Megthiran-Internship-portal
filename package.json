@@ -4,10 +4,13 @@
   "description": "Megthiran internship portal with student dashboard backend.",
   "main": "backend/server.js",
   "scripts": {
-    "build": "node scripts/generate-certificate-data.js",
-    "prestart": "node scripts/generate-certificate-data.js",
+    "build": "npm run generate:certificates",
+    "generate:certificates": "node scripts/generate-certificate-data.js && node scripts/generate-qrcodes.js",
+    "generate:certificate-data": "node scripts/generate-certificate-data.js",
+    "generate:qrcodes": "node scripts/generate-qrcodes.js",
+    "prestart": "npm run generate:certificates",
     "start": "node backend/server.js",
-    "predev": "node scripts/generate-certificate-data.js",
+    "predev": "npm run generate:certificates",
     "dev": "node backend/server.js",
     "test": "node --test"
   },
@@ -31,6 +34,7 @@
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
+    "qrcode": "^1.5.4",
     "xlsx": "^0.18.5"
   }
 }

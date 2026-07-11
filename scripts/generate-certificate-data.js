@@ -1,125 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const XLSX = require('xlsx');
+const {
+  rootDir,
+  frontendDir,
+  loadCertificateRecords,
+} = require('./certificate-records');
 
-const rootDir = path.resolve(__dirname, '..');
-const frontendDir = path.join(rootDir, 'frontend');
-const workbookCandidates = [
-  'Premium Final Submission.xlsx',
-  'Premium Final Submission Form (Responses).xlsx',
-];
 const outputPath = path.join(frontendDir, 'certificate-verification-data.js');
-
-const columnAliases = {
-  studentName: ['full name', 'student name', 'name'],
-  internId: ['intern id', 'intern_id'],
-  domainName: ['domain name', 'internship domain', 'domain'],
-  domainId: ['domain id', 'domain_id'],
-  package: ['package', 'package selected', 'internship package'],
-  completedStatus: ['completed status', 'completion status', 'status'],
-};
-
-function normalizeHeader(value) {
-  return String(value || '')
-    .trim()
-    .replace(/\s+/g, ' ')
-    .toLowerCase();
-}
-
-function findWorkbookPath() {
-  for (const fileName of workbookCandidates) {
-    const candidate = path.join(frontendDir, fileName);
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-
-  throw new Error(
-    `Certificate verification workbook not found. Expected one of: ${workbookCandidates.join(', ')}`
-  );
-}
-
-function findHeaderRow(rows) {
-  return rows.findIndex((row) => {
-    return row.some((cell) => normalizeHeader(cell) === 'intern id');
-  });
-}
-
-function buildColumnIndex(headers) {
-  const normalizedHeaders = headers.map(normalizeHeader);
-
-  return Object.fromEntries(
-    Object.entries(columnAliases).map(([fieldName, aliases]) => {
-      const index = normalizedHeaders.findIndex((header) => aliases.includes(header));
-
-      if (index === -1) {
-        throw new Error(
-          `Missing required certificate verification column: ${aliases[0]}`
-        );
-      }
-
-      return [fieldName, index];
-    })
-  );
-}
-
-function cellText(value) {
-  return String(value || '').trim();
-}
-
-function rowHasValue(row) {
-  return row.some((cell) => cellText(cell));
-}
-
-function loadCertificateRecords(workbookPath) {
-  const workbook = XLSX.readFile(workbookPath, {
-    cellDates: false,
-    raw: false,
-  });
-  const sheetName = workbook.SheetNames[0];
-  const worksheet = workbook.Sheets[sheetName];
-  const fullRange = worksheet['!ref'];
-
-  if (!fullRange) {
-    throw new Error('Certificate verification worksheet is empty.');
-  }
-
-  const rows = XLSX.utils.sheet_to_json(worksheet, {
-    header: 1,
-    defval: '',
-    blankrows: true,
-    range: fullRange,
-    raw: false,
-  });
-  const headerRowIndex = findHeaderRow(rows);
-
-  if (headerRowIndex === -1) {
-    throw new Error('Unable to find the Intern ID header row in the certificate workbook.');
-  }
-
-  const columnIndex = buildColumnIndex(rows[headerRowIndex]);
-  const lastDataRowIndex = rows.reduce((lastIndex, row, index) => {
-    return index > headerRowIndex && rowHasValue(row) ? index : lastIndex;
-  }, headerRowIndex);
-
-  const records = rows.slice(headerRowIndex + 1, lastDataRowIndex + 1)
-    .filter(rowHasValue)
-    .map((row) => ({
-      studentName: cellText(row[columnIndex.studentName]),
-      internId: cellText(row[columnIndex.internId]).toUpperCase(),
-      domainName: cellText(row[columnIndex.domainName]),
-      domainId: cellText(row[columnIndex.domainId]),
-      package: cellText(row[columnIndex.package]),
-      completedStatus: cellText(row[columnIndex.completedStatus]),
-      issuedBy: 'Megthiran Internship Program',
-    }));
-
-  console.log(`[certificate-data] Total records loaded: ${records.length}`);
-  console.log(`[certificate-data] First Intern ID: ${records[0]?.internId || '(none)'}`);
-  console.log(`[certificate-data] Last Intern ID: ${records[records.length - 1]?.internId || '(none)'}`);
-
-  return records;
-}
 
 function writeCertificateData(records) {
   const fileContents = [
@@ -132,9 +19,12 @@ function writeCertificateData(records) {
   fs.writeFileSync(outputPath, fileContents, 'utf8');
 }
 
-const workbookPath = findWorkbookPath();
-const records = loadCertificateRecords(workbookPath);
+const { records, workbookPath } = loadCertificateRecords();
 writeCertificateData(records);
+
+console.log(`[certificate-data] Total records loaded: ${records.length}`);
+console.log(`[certificate-data] First Intern ID: ${records[0]?.internId || '(none)'}`);
+console.log(`[certificate-data] Last Intern ID: ${records[records.length - 1]?.internId || '(none)'}`);
 
 console.log(
   `Generated ${path.relative(rootDir, outputPath)} from ${path.relative(rootDir, workbookPath)} (${records.length} records).`
