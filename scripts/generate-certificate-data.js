@@ -22,10 +22,6 @@ function writeCertificateData(records) {
 const { records, workbookPath } = loadCertificateRecords();
 writeCertificateData(records);
 
-console.log(`[certificate-data] Total records loaded: ${records.length}`);
-console.log(`[certificate-data] First Intern ID: ${records[0]?.internId || '(none)'}`);
-console.log(`[certificate-data] Last Intern ID: ${records[records.length - 1]?.internId || '(none)'}`);
-
 console.log(
   `Generated ${path.relative(rootDir, outputPath)} from ${path.relative(rootDir, workbookPath)} (${records.length} records).`
 );

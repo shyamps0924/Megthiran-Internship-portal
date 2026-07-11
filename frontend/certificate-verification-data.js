@@ -144,5 +144,14 @@ window.MEGTHIRAN_CERTIFICATE_RECORDS = [
     "package": "Premium",
     "completedStatus": "Completed",
     "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Jashwanth V",
+    "internId": "M26IP216",
+    "domainName": "Digital Content Creation",
+    "domainId": "26NT-G-DCC",
+    "package": "Premium",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
   }
 ];

@@ -19,6 +19,10 @@ async function generateQrCodes() {
   const { records, workbookPath } = loadCertificateRecords();
   const seenInternIds = new Set();
   const uniqueRecords = records.filter((record) => {
+    if (!record.internId) {
+      return false;
+    }
+
     if (seenInternIds.has(record.internId)) {
       return false;
     }

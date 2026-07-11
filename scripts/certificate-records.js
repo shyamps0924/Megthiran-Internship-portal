@@ -112,8 +112,11 @@ function loadCertificateRecords(workbookPath = findWorkbookPath()) {
       package: cellText(row[columnIndex.package]),
       completedStatus: cellText(row[columnIndex.completedStatus]),
       issuedBy: 'Megthiran Internship Program',
-    }))
-    .filter((record) => record.internId);
+    }));
+
+  console.log(`[certificate-data] Total records loaded: ${records.length}`);
+  console.log(`[certificate-data] First Intern ID: ${records[0]?.internId || '(none)'}`);
+  console.log(`[certificate-data] Last Intern ID: ${records[records.length - 1]?.internId || '(none)'}`);
 
   return {
     records,
