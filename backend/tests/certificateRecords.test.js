@@ -16,7 +16,7 @@ test('certificate parser includes final non-empty row and ignores only empty row
     ['First Student', 'M26IP001', '', 'D01', 'Premium', 'Completed'],
     ['Partially Filled Student', '', '', '', '', 'Completed'],
     ['', '', '', '', '', ''],
-    ['Last Student', ' m26ip999 ', 'Cloud Computing', '', 'Premium', 'Completed'],
+    ['Last Student', ' m26ip999 ', 'Cloud Computing', '', 'Elite', 'Completed'],
   ];
 
   const workbook = XLSX.utils.book_new();
@@ -33,6 +33,7 @@ test('certificate parser includes final non-empty row and ignores only empty row
     assert.equal(records[1].internId, '');
     assert.equal(records[2].studentName, 'Last Student');
     assert.equal(records[2].internId, 'M26IP999');
+    assert.equal(records[2].package, 'Elite');
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }

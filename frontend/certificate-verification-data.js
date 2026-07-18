@@ -153,5 +153,131 @@ window.MEGTHIRAN_CERTIFICATE_RECORDS = [
     "package": "Premium",
     "completedStatus": "Completed",
     "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "BEULAH .C",
+    "internId": "M26IP132",
+    "domainName": "WEB DEVELOPMENT AND FUNDAMENTALS",
+    "domainId": "26T-A-WD",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "SHANNON T",
+    "internId": "M26IP077",
+    "domainName": "Content Writing",
+    "domainId": "26NT-B-CW",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "SHAIK MUNWAAR",
+    "internId": "M26IP152",
+    "domainName": "Web developement fundamental",
+    "domainId": "26T-A-WD",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Bavadhashini S",
+    "internId": "M26IP006",
+    "domainName": "Python programming",
+    "domainId": "26T-A-PY",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Pavitra kr",
+    "internId": "M26IP088",
+    "domainName": "Project management fundamentals",
+    "domainId": "26NT D PM",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "P.SANJAY KUMARAN",
+    "internId": "M26IP127",
+    "domainName": "Sensor Technology Fundamentals",
+    "domainId": "26T-E-SEN",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "P.SANJAY KUMARAN",
+    "internId": "M26IP127",
+    "domainName": "Sensor Technology Fundamentals",
+    "domainId": "26T-E-SEN",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "M.SUBHASHINI",
+    "internId": "M26IP109",
+    "domainName": "introduction to machine learning",
+    "domainId": "26T-C-ML",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Varsha",
+    "internId": "M26IP082",
+    "domainName": "Project management Fundamentals",
+    "domainId": "26NT-D-PM",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Deepikha K",
+    "internId": "M26IP131",
+    "domainName": "Web Development Fundamentals",
+    "domainId": "26T-A-WD",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Alagiya surya M",
+    "internId": "M26IP130",
+    "domainName": "Web development fundamentals",
+    "domainId": "26T-A-WD",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Ghanisha J",
+    "internId": "M26IP133",
+    "domainName": "Web development fundamentals",
+    "domainId": "26T-A-WD",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Kommineni manvitha chowdary",
+    "internId": "M26IP168",
+    "domainName": "Sensor Technology Fundamentals",
+    "domainId": "26T-E-SEN",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Kishore P",
+    "internId": "M26IP001",
+    "domainName": "AI Tools & Prompt Engineering",
+    "domainId": "26T-C-AI",
+    "package": "Elite",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
   }
 ];
