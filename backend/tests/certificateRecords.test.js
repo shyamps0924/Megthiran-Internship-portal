@@ -16,7 +16,8 @@ test('certificate parser includes final non-empty row and ignores only empty row
     ['First Student', 'M26IP001', '', 'D01', 'Premium', 'Completed'],
     ['Partially Filled Student', '', '', '', '', 'Completed'],
     ['', '', '', '', '', ''],
-    ['Last Student', ' m26ip999 ', 'Cloud Computing', '', 'Elite', 'Completed'],
+    ['Elite Student', ' m26ip888 ', 'Cloud Computing', '', 'Elite', 'Completed'],
+    ['Last Student', ' m26ip999 ', 'Cloud Computing', '', 'Elevate', 'Completed'],
   ];
 
   const workbook = XLSX.utils.book_new();
@@ -27,13 +28,16 @@ test('certificate parser includes final non-empty row and ignores only empty row
   try {
     const { records } = loadCertificateRecords(workbookPath);
 
-    assert.equal(records.length, 3);
+    assert.equal(records.length, 4);
     assert.equal(records[0].internId, 'M26IP001');
     assert.equal(records[1].studentName, 'Partially Filled Student');
     assert.equal(records[1].internId, '');
-    assert.equal(records[2].studentName, 'Last Student');
-    assert.equal(records[2].internId, 'M26IP999');
+    assert.equal(records[2].studentName, 'Elite Student');
+    assert.equal(records[2].internId, 'M26IP888');
     assert.equal(records[2].package, 'Elite');
+    assert.equal(records[3].studentName, 'Last Student');
+    assert.equal(records[3].internId, 'M26IP999');
+    assert.equal(records[3].package, 'Elevate');
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
