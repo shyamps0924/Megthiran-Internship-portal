@@ -309,7 +309,7 @@ window.MEGTHIRAN_CERTIFICATE_RECORDS = [
   },
   {
     "studentName": "Akash kumar V",
-    "internId": "ID:M26IP281",
+    "internId": "M26IP281",
     "domainName": "Web Development Fundamentals",
     "domainId": "26T-A-WD",
     "package": "Elite",
@@ -318,7 +318,7 @@ window.MEGTHIRAN_CERTIFICATE_RECORDS = [
   },
   {
     "studentName": "S JEGATHISAN",
-    "internId": "M261P199",
+    "internId": "M26IP199",
     "domainName": "Web development fundamentals",
     "domainId": "26T-A-WD",
     "package": "Elite",
