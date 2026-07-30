@@ -531,5 +531,14 @@ window.MEGTHIRAN_CERTIFICATE_RECORDS = [
     "package": "Elevate",
     "completedStatus": "Completed",
     "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Harini",
+    "internId": "M26IP288",
+    "domainName": "Java Programming",
+    "domainId": "26T-A-JV",
+    "package": "Elevate",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
   }
 ];
