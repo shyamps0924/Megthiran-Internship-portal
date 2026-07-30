@@ -513,5 +513,23 @@ window.MEGTHIRAN_CERTIFICATE_RECORDS = [
     "package": "Elevate",
     "completedStatus": "Completed",
     "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Varun R",
+    "internId": "M26IP267",
+    "domainName": "Python programming",
+    "domainId": "26T-A-PY",
+    "package": "Elevate",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
+  },
+  {
+    "studentName": "Yuvaraj M",
+    "internId": "M26IP277",
+    "domainName": "Web development fundamentals",
+    "domainId": "26T-A-WD",
+    "package": "Elevate",
+    "completedStatus": "Completed",
+    "issuedBy": "Megthiran Internship Program"
   }
 ];
